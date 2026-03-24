@@ -1,0 +1,22 @@
+# Python virtual environments
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# macOS
+.DS_Store
+
+# IDE files
+.idea/
+
+# Environment files
+.env
+
+# Local database / temporary files
+*.log
+
+# Scraped seed data
+bricklink.json.gz

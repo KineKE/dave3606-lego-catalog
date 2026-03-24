@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lego database</title>
+        <link rel="icon" type="image/png" href="/static/amazing_favicon.png">
+        <link rel="stylesheet" href="/static/style.css">
+    </head>
+    <body>
+        <h1>Lego database</h1>
+        <p><a href="/sets">All Lego sets</a></p>
+        <form method="get" action="/set">
+            Set id: <input type="text" name="id"/> <input type="submit" value="Find">
+        </form>
+
+        <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+        <script src="/static/script.js"></script>
+        <button onclick="legoRain()">Make it rain!</button>
+    </body>
+
+</html>
