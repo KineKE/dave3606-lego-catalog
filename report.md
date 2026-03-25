@@ -1,7 +1,14 @@
 # DAVE3606 - Resource-Efficient Programs Project - 2026
 > Kine Kragl Engseth - s330526 - kieng6560
 
-
+## Table of Content
+- [Task 1 - Add database constraints](#task-1---add-database-constraints)
+- [Task 2 - Design indexes for flexible queries](#task-2---design-indexes-for-flexible-queries)
+- [Task 3 - Algorithmic complexity improvements](#task-3---algorithmic-complexity-improvements)
+- [Task 4 - Encoding, compression, and file handle leaks](#task-4---encoding-compression-and-file-handle-leaks)
+- [Task 5 - File formats](#task-5---file-formats)
+- [Task 6 - Frontend and caching](#task-6---frontend-and-caching)
+- [Task 7 - Testing and dependency injection](#task-7---testing-and-dependency-injection)
 
 ## Task 1 - Add database constraints
 
