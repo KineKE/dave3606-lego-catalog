@@ -15,18 +15,7 @@
 - Add primary keys and foreign keys to the database tables and explain the design choices
 - Show the SQL statements that you wrote to create the primary keys
 
-```sql
-null
-```
-
-### Current database model
-
-The files provided for this project contain three tables:
-1) `lego_set`: stores information about Lego sets variants
-2) `lego_brick`: stores information about Lego bricks variants
-3) `lego_inventory`: stores how many of a given brick variant belong to a given set
-
-### Current schema
+### Initial schema
 
 ```mermaid
 erDiagram
@@ -53,6 +42,47 @@ erDiagram
   }
 ```
 
+There are no established relations between the tables, even though most of the `lego_inventory` table is derived from the other two tables (`lego_set` and `lego_brick`).
+
+### Schema interpretation
+
+| Table            | One row represents                            | Uniqueness depends on    | Notes                                                                             |
+|------------------|-----------------------------------------------|--------------------------|-----------------------------------------------------------------------------------|
+| `lego_set`       | one Lego set                                  | set identity             | no two rows should represent the same set                                         |
+| `lego_brick`     | one brick variant                             | brick type + brick color | the same brick type in two separate colors, should be stored as two separate rows |
+| `lego_inventory` | one brick variant in one set, with a quantity | N/A                      | relationship table between `lego_set` and `lego_brick` (many-to-many)             |
+
+### Design reasoning
+
+#### Primary key choices
+
+A primary key adds two factors to the attribute candidate for a primary key constraint: 
+- uniqueness
+- not null constraint.
+
+To make solid choices for the primary keys, it is important to identity what uniqueness means for the different tables.
+
+For my models, I want one row to represent:
+
+`lego_set`: one single Lego set. 
+No two rows should exist and be the same set.
+
+`lego_brick`: one specific brick type combined with one specific color.
+This means that `brick_type` A in the color purple, and `brick_type` A in the color blue, should represent two separate rows in the table. 
+
+
+`lego_inventory`
+
+This means that the primary key for table blablab is blabla.
+
+
+#### Foreign key choices
+
+### Migration
+
+```sql
+null
+```
 
 ### Improved schema
 
@@ -60,7 +90,7 @@ erDiagram
 ```mermaid
 erDiagram
   lego_set {
-    text id
+    text id PK
     text name
     int year
     text category
