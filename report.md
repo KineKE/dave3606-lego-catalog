@@ -46,11 +46,11 @@ There are no established relations between the tables, even though most of the `
 
 ### Schema interpretation
 
-| Table            | One row represents                            | Uniqueness depends on    | Notes                                                                             |
-|------------------|-----------------------------------------------|--------------------------|-----------------------------------------------------------------------------------|
-| `lego_set`       | one Lego set                                  | set identity             | no two rows should represent the same set                                         |
-| `lego_brick`     | one brick variant                             | brick type + brick color | the same brick type in two separate colors, should be stored as two separate rows |
-| `lego_inventory` | one brick variant in one set, with a quantity | N/A                      | relationship table between `lego_set` and `lego_brick` (many-to-many)             |
+| Table            | One row represents                            | Uniqueness depends on                             | Notes                                                                             |
+|------------------|-----------------------------------------------|---------------------------------------------------|-----------------------------------------------------------------------------------|
+| `lego_set`       | one Lego set                                  | set identity                                      | no two rows should represent the same set                                         |
+| `lego_brick`     | one brick variant                             | brick type + brick color                          | the same brick type in two separate colors, should be stored as two separate rows |
+| `lego_inventory` | one brick variant in one set, with a quantity | count per color of specific brick in specific set | relationship table between `lego_set` and `lego_brick` (many-to-many)             |
 
 ### Design reasoning
 
@@ -98,22 +98,21 @@ erDiagram
   }
 
   lego_brick {
-    int brick_type_id
-    int color_id
+    int brick_type_id PK
+    int color_id PK
     text name
     text preview_image_url
   }
 
   lego_inventory {
-    text set_id
-    text brick_type_id
-    int color_id
+    text set_id PK
+    text brick_type_id PK
+    int color_id PK
     int count
   }
 
   lego_set ||--o{ lego_inventory : contains
   lego_brick ||--o{ lego_inventory : appears_in
-
 ```
 
 ## Task 2 — Design indexes for flexible queries
