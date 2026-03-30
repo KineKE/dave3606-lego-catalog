@@ -74,6 +74,8 @@ The general formula for a permutation is:
 $$
 P(n,r) = \frac{n!}{(n-r)!}
 $$
+
+
 As I am ordering all the columns, r = n, therefore:
 
 $$
