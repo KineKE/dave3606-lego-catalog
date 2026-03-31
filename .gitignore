@@ -19,4 +19,4 @@ __pycache__/
 *.log
 
 # Scraped seed data
-bricklink.json.gz
+database/bricklink.json.gz

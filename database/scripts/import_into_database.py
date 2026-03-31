@@ -11,7 +11,7 @@ conn = psycopg.connect(
     password="bricks",
 )
 
-with gzip.open("bricklink.json.gz") as f:
+with gzip.open("../bricklink.json.gz") as f:
     sets = json.load(f)
 
 cur = conn.cursor()
