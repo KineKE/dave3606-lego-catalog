@@ -13,7 +13,7 @@ cur.execute(
     """
     ALTER TABLE lego_set 
         DROP CONSTRAINT IF EXISTS
-        pk_lego_set;
+            pk_lego_set;
         
     ALTER TABLE lego_set
         ADD CONSTRAINT pk_lego_set
