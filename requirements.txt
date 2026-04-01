@@ -3,3 +3,6 @@ psycopg[binary,pool]>=3.0.0
 pytest
 tox
 python-dotenv
+
+make
+flake8

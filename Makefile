@@ -36,6 +36,6 @@ help:
 	@echo "	make setup-db	- initialize the database and run migrations"
 	@echo "	make start-db	- start the Docker container with the database"
 	@echo "	make stop-db	- stop the Docker container with the database"
-	@echo "	make connect-db	- connect to the database (after it has been started)"
+	@echo "	make connect-db	- connect to the database (after the Docker container has been started)"
 	@echo "	make run	- run the application"
-	@echo "	make test	- run tests and linter with tox"
+	@echo "	make test	- run tests and linter (flake8) with tox"
