@@ -267,7 +267,7 @@ WHERE brick_type_id = '3011';
 **Result before index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan </summary>
 
 ```text
                                                                     QUERY PLAN                                                                    
@@ -303,7 +303,7 @@ Time: 467.259 ms
 **Result after index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full </summary>
 
 ```text
                                                               QUERY PLAN                                                              
@@ -345,7 +345,7 @@ WHERE brick_type_id = '4209';
 **Result before index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan</summary>
 
 ```text
                                                                    QUERY PLAN                                                                   
@@ -379,7 +379,7 @@ Time: 444.639 ms
 **Result after index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan</summary>
 
 ```text
                                                                QUERY PLAN                                                               
@@ -421,7 +421,7 @@ WHERE color_id = 95;
 **Result before index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan</summary>
 
 ```text
                                                                   QUERY PLAN                                                                  
@@ -452,7 +452,7 @@ Time: 338.960 ms
 **Result after index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan</summary>
 
 ```text
                                                               QUERY PLAN                                                               
@@ -491,7 +491,7 @@ WHERE color_id = 4;
 **Result before index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan</summary>
 
 ```text
 
@@ -523,7 +523,7 @@ Time: 401.057 ms
 **Result after index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan</summary>
 
 ```text
                                                                QUERY PLAN                                                                
@@ -594,7 +594,7 @@ WHERE brick_type_id = '3011';
 **Result after new index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan</summary>
 
 ```text
                                                                       QUERY PLAN                                                                     
@@ -629,7 +629,7 @@ WHERE brick_type_id = '4209';
 **Result after new index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan</summary>
 
 ```text
                                                                    QUERY PLAN                                                                   
@@ -664,7 +664,7 @@ WHERE color_id = 95;
 **Result after new index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan</summary>
 
 ```text
                                                                     QUERY PLAN                                                                     
@@ -700,7 +700,7 @@ WHERE color_id = 4;
 **Result after new index**
 
 <details>
-  <summary>Click to view full analysis</summary>
+  <summary>Click to view full query plan</summary>
 
 ```text
                                                                       QUERY PLAN                                                                      
@@ -757,10 +757,10 @@ This shows that index usefulness depends on selectivity and query shape, not onl
 - Design your own binary file format for representing a LEGO set and its inventory. Describe the file format in the report.
 
 1) Producer
-File name: KINE (KINE Is Not Encoding/KINE Is Nearly Efficient)
-Extension: `.kine`
-Description: a custom binary file format
-Explanation: The flask endpoint creates the binary data
+- File name: KINE (KINE Is Not Encoding/KINE Is Nearly Efficient)
+- Extension: `.kine`
+- Description: a custom binary file format
+- Explanation: The flask endpoint creates the binary data
 
 Brainstorming - method names for the producer:
 - flatten_to_kine()
@@ -770,9 +770,9 @@ Brainstorming - method names for the producer:
    
 
 2) Consumer
-File name: kinecat
 <details>
-  <Summary>Click to see honorable mentions</Summary>
+  <Summary>File name: kinecat</Summary>
+  *Honorable mentions:*
     - unkine 
     - dekine
     - kinedump
