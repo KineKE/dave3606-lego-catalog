@@ -552,12 +552,13 @@ Time: 891.480 ms
 
 ### Summary
 
-| Query #        | Purpose                                | Before | After  | Why it improved                                                                                                                                                                                                                                            |
-|----------------|----------------------------------------|--------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [1](#query-1)  | Searching by a brick_type_id           | 467 ms | 96 ms  | The index is selective e to reduce the number o that must be read. The database can avoid a full table scan and use-based access path.                                                                                                                     |
-| [2](#query-2)  | Searching by a different brick_type_id | 444 ms | 29 ms  | The same reason as above.                                                                                                                                                                                                                                  |
-| [3](#query-3)  | Searching by a color_id                | 339 ms | 690 ms | The index on `color_id` is not selective enough. As many rows share the same color, the database still has to fetch a large number of heap pages. This indexed plan turns out to be slower than the parallel sequential scan that was performed initially. |
-| [4](#query-4)  | Searching by a different color_id      | 401 ms | 891 ms | Same reason as above.                                                                                                                                                                                                                                      |
+
+| Query #                      | Purpose                                | Before | After  | Why it improved                                                                                                                                                                                                                                            |
+|------------------------------|----------------------------------------|--------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [1](#query-1---single-index) | Searching by a brick_type_id           | 467 ms | 96 ms  | The index is selective e to reduce the number o that must be read. The database can avoid a full table scan and use-based access path.                                                                                                                     |
+| [2](#query-2---single-index) | Searching by a different brick_type_id | 444 ms | 29 ms  | The same reason as above.                                                                                                                                                                                                                                  |
+| [3](#query-3---single-index) | Searching by a color_id                | 339 ms | 690 ms | The index on `color_id` is not selective enough. As many rows share the same color, the database still has to fetch a large number of heap pages. This indexed plan turns out to be slower than the parallel sequential scan that was performed initially. |
+| [4](#query-4---single-index) | Searching by a different color_id      | 401 ms | 891 ms | Same reason as above.                                                                                                                                                                                                                                      |
 
 
 ### Index re-design
@@ -581,7 +582,7 @@ CREATE INDEX colorid_idx
 ```
 
 
-### Query 1 - Composite index
+### Query 1 — Composite index
 
 ```sql
 EXPLAIN ANALYZE
@@ -616,7 +617,7 @@ WHERE brick_type_id = '3011';
 Time: 8.121 ms
 ```
 
-### Query 2  - Composite index
+### Query 2 — Composite index
 
 ```sql
 EXPLAIN ANALYZE
@@ -650,7 +651,7 @@ WHERE brick_type_id = '4209';
 Time: 1.967 ms
 ```
 
-### Query 3 - Composite index
+### Query 3 — Composite index
 
 ```sql
 EXPLAIN ANALYZE
@@ -686,7 +687,7 @@ WHERE color_id = 95;
 Time: 11.298 ms
 ```
 
-### Query 4 - Composite index
+### Query 4 — Composite index
 
 ```sql
 EXPLAIN ANALYZE
@@ -726,15 +727,14 @@ Time: 34.533 ms
 ### Conclusion
 
 
-|    Query #    | Purpose                                | Before index | After single index | Re-design with composite index |
-|:-------------:|:---------------------------------------|:------------:|:------------------:|:------------------------------:|
-| [1](#query-1) | Searching by a brick_type_id           |    467 ms    |       96 ms        |              8 ms              |
-| [2](#query-2) | Searching by a different brick_type_id |    444 ms    |       29 ms        |              2 ms              |
-| [3](#query-3) | Searching by a color_id                |    339 ms    |       690 ms       |             11 ms              |
-| [4](#query-4) | Searching by a different color_id      |    401 ms    |       891 ms       |             35 ms              |
+|           Query #            | Purpose                                | Before index | After single index | Re-design with composite index |
+|:----------------------------:|:---------------------------------------|:------------:|:------------------:|:------------------------------:|
+| [1](#query-1---single-index) | Searching by a brick_type_id           |    467 ms    |       96 ms        |              8 ms              |
+| [2](#query-2---single-index) | Searching by a different brick_type_id |    444 ms    |       29 ms        |              2 ms              |
+| [3](#query-3---single-index) | Searching by a color_id                |    339 ms    |       690 ms       |             11 ms              |
+| [4](#query-4---single-index) | Searching by a different color_id      |    401 ms    |       891 ms       |             35 ms              |
 
- ***Why all queries improves with a composite index***
-
+ ***Why all queries improve with a composite index***
 
 `color_id`/`brick_type_id` was used to filter, and `set_id` was available from the same index. This way, going back into the table was avoided, and the search could be performed using an Index Only Scan, which drastically improved the performance.
 A single-column index on `color_id` did not improve performance. 

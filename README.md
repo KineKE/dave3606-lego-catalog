@@ -21,14 +21,44 @@
 | Task 7 |                                |             |       |
 
 
-# About this project
+## About this project
 
 
 https://github.com/aasmundeldhuset/dave3606-project-2026
 
 The original assignment can also be found under /docs/original_assignment.md
 
-# Stack
+## Stack
 
 
-# How to run
+## How to run
+
+> [!TIP]
+> To get a full list of make commands, use `make help`
+
+### Initial setup
+
+1. Create and seed the database
+
+```text
+make setup-db
+```
+
+
+### How to use
+
+- To connect to the database
+```text
+````
+
+- To run the app:
+
+```text
+make run
+```
+
+To run the test suite (using Tox which runs on pytest)
+
+```text
+make test
+```
