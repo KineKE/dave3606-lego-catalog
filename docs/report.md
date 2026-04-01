@@ -756,6 +756,40 @@ This shows that index usefulness depends on selectivity and query shape, not onl
 
 - Design your own binary file format for representing a LEGO set and its inventory. Describe the file format in the report.
 
+1) Producer
+File name: KINE (KINE Is Not Encoding/KINE Is Nearly Efficient)
+Extension: `.kine`
+Description: a custom binary file format
+Explanation: The flask endpoint creates the binary data
+
+Brainstorming - method names for the producer:
+- flatten_to_kine()
+- pack_kine()
+- flatten_to_kine()
+- serialize_kine()
+   
+
+2) Consumer
+File name: kinecat
+<details>
+  <Summary>Click to see honorable mentions</Summary>
+    - unkine 
+    - dekine
+    - kinedump
+
+</details>
+Description: Like `.cat`, but for `.kine` files
+Explanation: This app reads the `.kine` binary file and prints the info
+
+Brainstorming - method names for kinecat:
+- is_kine()
+- read_kine()
+- parse_kine()
+- from_kine()
+- unpack_kine()
+- load_kine()
+
+
 ## Task 6 — Frontend and caching
 
 - Add a server-side cache that stores the 100 most recently requested sets. Explain briefly in the report how the cache works, which eviction policy you chose, and what its complexity is.
