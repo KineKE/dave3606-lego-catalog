@@ -7,7 +7,7 @@ import html
 from flask import Response, request, Blueprint, render_template, jsonify
 from time import perf_counter
 
-from app.database_connection import get_connection
+from app.db_connection import get_connection
 
 bp = Blueprint('main', __name__)
 
