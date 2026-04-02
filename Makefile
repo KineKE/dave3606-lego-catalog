@@ -1,6 +1,10 @@
 # Install requirements/dependencies for the project
 install:
+	pip install -r requirements.txt
 
+# Set up environment variables
+env:
+	cp .env.example .env
 
 # Database setup and migration
 setup-db:
@@ -20,11 +24,11 @@ stop-db:
 
 # Connect to the database (after it has been started)
 connect-db:
-	./databse/scripts/connect_to_database.sh
+	./database/scripts/connect_to_database.sh
 
 # Run the web app
 run:
-	python ./app/server.py
+	python python run.py
 
 # Run the full test suite
 test:
