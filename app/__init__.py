@@ -7,9 +7,13 @@ from flask import Flask
 
 
 def create_app():
+    """
+    Docstring goes here.
+    :return:
+    """
     app = Flask(__name__)
 
-    from .routes import register_routes
-    register_routes(app)
+    from .routes import bp
+    app.register_blueprint(bp)
 
     return app
