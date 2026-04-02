@@ -1,13 +1,6 @@
-import psycopg
+from app.database import get_connection
 
-conn = psycopg.connect(
-    host="localhost",
-    port=9876,
-    dbname="lego-db",
-    user="lego",
-    password="bricks",
-)
-
+conn = get_connection()
 cur = conn.cursor()
 cur.execute(
     """
