@@ -1,22 +1,20 @@
 import json
 import html
-from flask import Flask, Response, request
+from flask import Response, request
 from time import perf_counter
 
 from app.database import get_connection
 
-app = Flask(__name__)
-
-
-@app.route("/")
-def index():
-    template = open("templates/index.html").read()
-    return Response(template)
+def register_routes(app):
+    @app.route("/")
+    def index():
+        template = open("app/templates/index.html").read()
+        return Response(template)
 
 
 @app.route("/sets")
 def sets():
-    template = open("templates/sets.html").read()
+    template = open("app/templates/sets.html").read()
     rows = ""
 
     start_time = perf_counter()
@@ -39,7 +37,7 @@ def sets():
 
 @app.route("/set")
 def legoSet():  # We don't want to call the function `set`, since that would hide the `set` data type.
-    template = open("templates/set.html").read()
+    template = open("app/templates/set.html").read()
     return Response(template)
 
 
@@ -49,9 +47,3 @@ def apiSet():
     result = {"set_id": set_id}
     json_result = json.dumps(result, indent=4)
     return Response(json_result, content_type="application/json")
-
-
-if __name__ == "__main__":
-    app.run(port=5000, debug=True)
-
-# Note: If you define new routes, they have to go above the call to `app.run`.
