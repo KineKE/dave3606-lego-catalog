@@ -18,5 +18,5 @@ __pycache__/
 # Local database / temporary files
 *.log
 
-# Scraped seed data
-database/bricklink.json.gz
+# test suite
+.tox
