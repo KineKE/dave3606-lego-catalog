@@ -6,6 +6,10 @@ load_dotenv()
 
 
 def get_connection():
+    """
+    A database connection wrapper
+    :return:
+    """
     return psycopg.connect(
         host=os.getenv("DB_HOST"),
         port=int(os.getenv("DB_PORT")),
