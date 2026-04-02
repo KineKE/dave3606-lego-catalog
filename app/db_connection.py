@@ -1,3 +1,7 @@
+"""
+Module text goes here.
+"""
+
 import os
 import psycopg
 from dotenv import load_dotenv
@@ -7,7 +11,7 @@ load_dotenv()
 
 def get_connection():
     """
-    A database connection wrapper
+    A database connection wrapper.
     :return:
     """
     return psycopg.connect(
