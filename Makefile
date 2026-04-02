@@ -28,7 +28,7 @@ connect-db:
 
 # Run the web app
 run:
-	python python run.py
+	python run.py
 
 # Run the full test suite
 test:
