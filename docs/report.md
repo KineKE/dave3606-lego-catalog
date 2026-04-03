@@ -741,12 +741,58 @@ A single-column index on `color_id` did not improve performance.
 This shows that index usefulness depends on selectivity and query shape, not only on whether a filtered column is indexed.
 
 
-
 ## Task 3 — Algorithmic complexity improvements
 
 - The endpoint http://localhost:5000/sets is quite slow.
   - Analyze the code
   - What time complexity does it have?
+
+
+Running the /sets:
+Time to render all sets: 8.774727322990657
+
+Ran it again:
+Time to render all sets: 11.497379831998842
+
+
+Analyse the code:
+
+The code does following
+
+1. Opens the HTML
+2. Creates an empty string
+3. Gets ALL (id, name) and orders it by the id in the lego set
+4. Then loops through each row (each set) and does:
+   - escape on both entries in the row (id, name) (in other words, the entries in columns 1 and 2 for that row)
+   - creates a variable called and set it to the value "rows" to be a new variable called "existing_rows"
+   - then sets "rows" to be the value of "existing rows"
+   - then says that rows is existing rows (which is empty to begin with, I assume?) and then 
+
+    
+```python
+@app.route("/sets")
+def sets():
+    template = open("app/templates/sets.html").read()
+    rows = ""
+
+    start_time = perf_counter()
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("select id, name from lego_set order by id")
+            for row in cur.fetchall():
+                html_safe_id = html.escape(row[0])
+                html_safe_name = html.escape(row[1])
+                existing_rows = rows
+                rows = existing_rows + f'<tr><td><a href="/set?id={html_safe_id}">{html_safe_id}</a></td><td>{html_safe_name}</td></tr>\n'
+        print(f"Time to render all sets: {perf_counter() - start_time}")
+    finally:
+        conn.close()
+
+    page_html = template.replace("{ROWS}", rows)
+    return Response(page_html, content_type="text/html")
+```
+
 
 ## Task 4 — Encoding, compression, and file handle leaks
 

@@ -14,6 +14,7 @@ def get_connection():
     A database connection wrapper.
     :return:
     """
+    #TODO: Check for missing values
     return psycopg.connect(
         host=os.getenv("DB_HOST"),
         port=int(os.getenv("DB_PORT")),
