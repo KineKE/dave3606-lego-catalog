@@ -798,3 +798,27 @@ Brainstorming - method names for kinecat:
 ## Task 7 — Testing and dependency injection
 
 *No report explanations for this section.*
+
+
+## Additional design choices
+
+- App Factory Pattern
+Had to use Blueprint in order to get the routes to work properly then.
+Including a root-based entrypoint (run.py)
+
+- Including tox as a test suite + flake8 as a linter
+
+- Using .env for variables (db-values)
+
+- Including a Makefile
+
+- Restructure the code base
+
+- app directory
+
+- init-file
+db-connection
+- kine
+- queries
+- routes
+

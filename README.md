@@ -1,4 +1,4 @@
-# DAVE3606 — Resource-Efficient Programs Project — 2026
+# DAVE3606 — Resource-efficient Programs Project — 2026
 > LEGO catalog database
 
 ![LEGO banner](https://firstbook.org/wp-content/uploads/2022/08/lego-landing-page-hero.png)
@@ -19,7 +19,7 @@
 
 
 ## About this project
-
+This project is my hand-in for the mandatory project for the course DAVE3606
 
 https://github.com/aasmundeldhuset/dave3606-project-2026
 
