@@ -1,10 +1,11 @@
-# DAVE3606 — Resource-Efficient Programs Project — 2026
+# DAVE3606 — Resource-efficient Programs Project — 2026
 > Kine Kragl Engseth - s330526 - kieng6560
 
 ![LEGO banner](https://firstbook.org/wp-content/uploads/2022/08/lego-landing-page-hero.png)
 
 
 ## Table of Content
+- Design summary (departure from initial repo structure)
 - [Task 1 — Add database constraints](#task-1--add-database-constraints)
 - [Task 2 — Design indexes for flexible queries](#task-2--design-indexes-for-flexible-queries)
 - [Task 3 — Algorithmic complexity improvements](#task-3--algorithmic-complexity-improvements)
@@ -12,6 +13,131 @@
 - [Task 5 — File formats](#task-5--file-formats)
 - [Task 6 — Frontend and caching](#task-6--frontend-and-caching)
 - [Task 7 — Testing and dependency injection](#task-7--testing-and-dependency-injection)
+
+
+
+## Additional design choices
+
+- App Factory Pattern
+Had to use Blueprint in order to get the routes to work properly then.
+Including a root-based entrypoint (run.py)
+
+- Including tox as a test suite + flake8 as a linter
+
+- The whole database class is one big context manager, so it can be used as such in the repository without having to create instances.
+
+- Using .env for variables (db-values)
+
+- Including a Makefile
+
+- Restructure the code base
+
+- app directory
+
+- init-file
+db-connection
+- kine
+- queries
+- routes
+
+## Design decisions
+
+
+1) Adding a factory pattern to the Flask project.
+
+A factory pattern.... blabla.
+
+Implementing this by making run.py the main entrypoint for running the app by running the app = create_app() function.
+In this case, app refers to the folder for the source code for the app itself. 
+
+It consists of, among other things, an __init__.py file. This file create the function for create_app().
+It is, in other words, this file that does the actual app creation itself. An app constructor, if you will, which fits its file name.
+In the app creation file, the Blueprint is added. 
+
+The file called routes.py is the route handler, as the name suggests.
+In the original file, the app was created here, and the routes were attached to this app using @app.routes.
+Then the app was created if the file was run as a file (__main__), not as a module. So running this file, was how the server was created.
+This creates a high coupling and makes it harder to test.
+
+
+2) Removing the repeated DB_CONFIG files with the connected psycopg.connect(). This code was repeated a lot, exposes secrets, and would be hard to maintain if anything were to change.
+
+
+
+
+
+
+- Lower coupling
+- Easier to test
+- Greater separation of concern
+- Easier to scale
+
+
+### Overview of the current file structure
+
+#### Directories
+
+- app
+-> this is where all of the running code lives
+
+- db_setup
+-> this is where the initialization and setup of the database is
+
+- docs
+-> this is where documentation for the project is located
+
+- tests
+-> the test files for the project lives here
+
+
+#### Files
+
+##### app directory
+
+- static folder
+- templates folder
+- __init__.py
+- database_connection.py
+- kine.py
+- queries.py
+- routes.py
+
+##### db_setup directory
+
+- scripts directory
+- sql directory
+- db_seed_bricklink.json.gz
+- migrate_database.py
+- seed_database.py
+
+##### docs directory
+
+
+##### tests directory
+
+
+##### misc in root
+
+- .env
+-> the environments for the project
+
+- .env.example
+-> a general template for how .env looks, that can be committed to git, so that others can insert their own info, such as passwords and usernames
+
+- Makefile
+
+- README.md
+
+- requirements.txt
+
+- run.py
+
+- tox.ini
+
+
+
+
+
 
 ## Task 1 — Add database constraints
 
@@ -844,27 +970,3 @@ Brainstorming - method names for kinecat:
 ## Task 7 — Testing and dependency injection
 
 *No report explanations for this section.*
-
-
-## Additional design choices
-
-- App Factory Pattern
-Had to use Blueprint in order to get the routes to work properly then.
-Including a root-based entrypoint (run.py)
-
-- Including tox as a test suite + flake8 as a linter
-
-- Using .env for variables (db-values)
-
-- Including a Makefile
-
-- Restructure the code base
-
-- app directory
-
-- init-file
-db-connection
-- kine
-- queries
-- routes
-
