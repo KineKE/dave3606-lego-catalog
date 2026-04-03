@@ -20,6 +20,10 @@ def index():
 
 @bp.route("/sets")
 def sets():
+    """
+    Takes ?? and returns a Response?
+    :return:
+    """
     template = open("app/templates/sets.html").read()
     rows = ""
 
