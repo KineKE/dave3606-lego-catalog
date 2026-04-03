@@ -4,8 +4,13 @@
 # It severely restricts the internal caching in PostgreSQL,to highlight the effects
 # of the indexes even though the database isn't huge.
 
+# Turns on auto-export, so all following variables are automatically exported
 set -a
+
+# Sends .env into the script
 . ./.env
+
+# Turns off auto-export
 set +a
 
 docker run \
