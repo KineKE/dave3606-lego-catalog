@@ -22,11 +22,11 @@ class DatabaseSession:
     """
 
     def __init__(self):
-        self.host = os.getenv("DB_HOST")
-        self.port = os.getenv("DB_PORT")
-        self.name = os.getenv("POSTGRES_DB")
-        self.user = os.getenv("POSTGRES_USER")
-        self.password = os.getenv("POSTGRES_PASSWORD")
+        self._host = os.getenv("DB_HOST")
+        self._port = os.getenv("DB_PORT")
+        self._name = os.getenv("POSTGRES_DB")
+        self._user = os.getenv("POSTGRES_USER")
+        self._password = os.getenv("POSTGRES_PASSWORD")
         self.connection = None
         self._validate_config()
 
@@ -35,30 +35,30 @@ class DatabaseSession:
         Validate that all the required database environment variables are set.
         """
         required_values = {
-            "DB_HOST": self.host,
-            "DB_PORT": self.port,
-            "POSTGRES_DB": self.name,
-            "POSTGRES_USER": self.user,
-            "POSTGRES_PASSWORD": self.password,
+            "DB_HOST": self._host,
+            "DB_PORT": self._port,
+            "POSTGRES_DB": self._name,
+            "POSTGRES_USER": self._user,
+            "POSTGRES_PASSWORD": self._password,
         }
 
         missing = [key for key, value in required_values.items() if not value]
 
         if missing:
-            raise ValueError(f"Missing required environment variables: {', '.join(missing)} are required")
+            raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
 
         try:
-            self.port = int(os.getenv("DB_PORT"))
+            self._port = int(self._port)
         except ValueError:
-            raise ValueError(f"Port number must be an integer. {self.port} is not an integer.")
+            raise ValueError(f"Port number must be an integer. {self._port} is not an integer.")
 
     def __repr__(self):
         """
         Return a string representation of the database session.
         """
         return (
-            f"DatabaseSession(host={self.host!r}, port={self.port!r}, "
-            f"dbname={self.name!r}, connected={self.connection is not None})"
+            f"DatabaseSession(host={self._host!r}, port={self._port!r}, "
+            f"dbname={self._name!r}, connected={self.connection is not None})"
         )
 
     def __enter__(self):
@@ -66,11 +66,11 @@ class DatabaseSession:
         Open a database connection and return the session object
         """
         self.connection = psycopg.connect(
-            host=self.host,
-            port=self.port,
-            dbname=self.name,
-            user=self.user,
-            password=self.password)
+            host=self._host,
+            port=self._port,
+            dbname=self._name,
+            user=self._user,
+            password=self._password)
 
         return self
 
