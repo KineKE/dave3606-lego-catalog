@@ -4,19 +4,12 @@
 # It severely restricts the internal caching in PostgreSQL,to highlight the effects
 # of the indexes even though the database isn't huge.
 
-# Turns on auto-export, so all following variables are automatically exported
-set -a
-
-# Sends .env into the script
-. ./.env
-
-# Turns off auto-export
-set +a
+. "$(dirname "$0")/load_env.sh"
 
 docker run \
     -d \
-    --name lego-postgres \
-    --env-file .env \
+    --name "${DB_CONTAINER_NAME}" \
+    --env-file "${ENV_FILE}" \
     -p "${DB_PORT}:5432" \
     postgres:18 \
     -c shared_buffers=128kB

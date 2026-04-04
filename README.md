@@ -20,15 +20,13 @@
 
 ## About this project
 This project is my hand-in for the mandatory project for the course [DAVE3606 Resource-efficient Programs](https://student.oslomet.no/en/studier/-/studieinfo/emne/DAVE3606/2025/HØST).
-The original course repository from the lecturer, [Åsmund Eldhuset](https://github.com/aasmundeldhuset) can be found [here](link here).
+The original course repository from the lecturer, [Åsmund Eldhuset](https://github.com/aasmundeldhuset) can be found [here](https://github.com/aasmundeldhuset/dave3606-project-2026).
 The code from the original repository
 
+The original assignment text can also be found under /docs/original_assignment.md, and the original code repository is located in a branch called "starting-point" in this repository.
+This preserved and early version of the code is kept intentionally to show the development process and architectural evolution of the codebase.
 
-https://github.com/aasmundeldhuset/dave3606-project-2026
-
-The original assignment can also be found under /docs/original_assignment.md
-
-## Stack
+## Technology
 
 
 ## How to run
@@ -38,14 +36,14 @@ The original assignment can also be found under /docs/original_assignment.md
 
 ### Initial setup
 
-#### Clone this repository
+#### 1) Clone this repository
 
 ```text
 git clone <repo-url>
 cd <repo-name>
 ```
 
-#### Create and activate a virtual environment
+#### 2) Create and activate a virtual environment
 
 ```text
 python -m venv .venv
@@ -59,7 +57,7 @@ source .venv/bin/activate
 ```
 </details>
 
-#### Install dependencies
+#### 3) Install dependencies
 
 ```text
 make install
@@ -73,7 +71,7 @@ pip install -r requirements.txt
 ```
 </details>
 
-#### Create and seed the database
+#### 4) Create and seed the database
 
 ```text
 make setup-db
@@ -92,7 +90,7 @@ make setup-db
 ```
 </details>
 
-#### Set up enviroment variables
+#### 5) Set up enviroment variables
 
 ```text
 make env
@@ -105,12 +103,12 @@ cp .env.example .env
 ```
 </details>
 
-Then adjust the values in .env if needed, such as database username and password
-
+Then adjust the values in .env if needed, such as database username and password.
+As this is a student project where we have set out own values, there is no need to make changes, it will work with the values provided as defaults.
 
 ### How to use
 
-#### Start Docker container for the database
+#### 1) Start Docker container for the database
 
 ```text
 make start-db
@@ -124,7 +122,7 @@ make start-db
 ```
 </details>
 
-#### To connect to the database
+#### 2) To connect to the database
 
 ```text
 make connect-db
@@ -139,7 +137,7 @@ make connect-db
 
 </details>
 
-#### To run the app:
+#### 3) To run the app:
 The recommended way to run the application is:
 
 ```text
@@ -297,3 +295,6 @@ This creates a high coupling and makes it harder to test.
 
 
 
+Any changes to the database environment, such as the container name, host name, port etc. Make the changes in the .env-file.
+You do not need to make changes elsewhere.
+This is the one source of truth for environment loading, and it is not hardcoded anywhere else.

@@ -1,3 +1,5 @@
 #!/bin/sh
 
-docker start lego-postgres
+. "$(dirname "$0")/load_env.sh"
+
+docker start "${DB_CONTAINER_NAME}"

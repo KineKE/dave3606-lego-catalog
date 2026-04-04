@@ -1,3 +1,5 @@
 #!/bin/sh
 
-docker stop lego-postgres
+. "$(dirname "$0")/load_env.sh"
+
+docker stop "${DB_CONTAINER_NAME}"
