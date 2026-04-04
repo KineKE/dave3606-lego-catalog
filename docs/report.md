@@ -115,6 +115,11 @@ This creates a high coupling and makes it harder to test.
 
 ##### tests directory
 
+- monkeypatching
+- conftest
+
+- tox8
+- (flake8)
 
 ##### misc in root
 
@@ -134,6 +139,7 @@ This creates a high coupling and makes it harder to test.
 
 - tox.ini
 
+https://bjoernricks.github.io/posts/python/context-manager/
 
 
 

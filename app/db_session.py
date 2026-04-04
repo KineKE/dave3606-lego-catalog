@@ -5,6 +5,7 @@ Module text goes here.
 import os
 import psycopg
 from dotenv import load_dotenv
+from contextlib import contextmanager
 
 load_dotenv()
 
@@ -38,6 +39,10 @@ class DatabaseSession:
         return f"Database {self.host, self.port, self.name, self.connection, self.cursor}"
 
     def __enter__(self):
+        """
+        Set up and require a database connection with psycopg.
+        :return: An instance of psycopg.connection
+        """
         self.connection = psycopg.connect(
             host=self.host,
             port=self.port,
@@ -49,6 +54,7 @@ class DatabaseSession:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
+        Shuts down and releases the psycopg.connection, even if an error is raised.
         Transaction!
 
         :param exc_type:
@@ -58,15 +64,16 @@ class DatabaseSession:
         """
         self.connection.close()
 
-
+    @contextmanager
     def get_cursor(self):
         pass
 
-    def fetch_all(self):
+    def execute(self, query):
         pass
 
     def fetch_one(self):
         pass
 
-    def execute(self, query):
+    def fetch_all(self):
         pass
+
