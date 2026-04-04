@@ -911,7 +911,7 @@ def sets():
     conn = get_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute("select id, name from lego_set order by id")
+            cur.execute("select id, _name from lego_set order by id")
             for row in cur.fetchall():
                 html_safe_id = html.escape(row[0])
                 html_safe_name = html.escape(row[1])
