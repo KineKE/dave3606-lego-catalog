@@ -20,7 +20,7 @@
 
 ## About this project
 This project is my hand-in for the mandatory project for the course [DAVE3606 Resource-efficient Programs](https://student.oslomet.no/en/studier/-/studieinfo/emne/DAVE3606/2025/HØST).
-The original course repository from the lecturer, [Åsmund Eldhuset](https://github.com/aasmundeldhuset) can be found [here](https://github.com/aasmundeldhuset/dave3606-project-2026).
+The original course repository from the lecturer, [Åsmund Eldhuset](https://github.com/aasmundeldhuset), can be found [here](https://github.com/aasmundeldhuset/dave3606-project-2026).
 The code from the original repository
 
 The original assignment text can also be found under /docs/original_assignment.md, and the original code repository is located in a branch called "starting-point" in this repository.
