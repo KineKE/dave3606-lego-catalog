@@ -18,12 +18,24 @@ class DatabaseSession:
         self.password = os.getenv("POSTGRES_PASSWORD")
         self.connection = None
         self.cursor = None
+        self._validate_config()
 
-    def _validate_blabla(self):
-        pass
+    def _validate_config(self):
+        required_values = {
+            "DB_HOST": self.host,
+            "DB_PORT": self.port,
+            "POSTGRES_DB": self.name,
+            "POSTGRES_USER": self.user,
+            "POSTGRES_PASSWORD": self.password,
+        }
+
+        missing = [key for key, value in required_values.items() if not value]
+
+        if missing:
+            raise ValueError(f"Missing required environment variables: {', '.join(missing)} are required")
 
     def __repr__(self):
-        return f"Database ('{self.host, self.port, self.name}')"
+        return f"Database {self.host, self.port, self.name, self.connection, self.cursor}"
 
     def __enter__(self):
         self.connection = psycopg.connect(
