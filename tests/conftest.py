@@ -3,7 +3,8 @@
 """
 
 import pytest
-from db_session import DatabaseSession
+from database_session import DatabaseSession
+
 
 # Use to mock the .env file
 @pytest.fixture
@@ -20,16 +21,18 @@ def fake_env(monkeypatch):
 
 
 # Use to test the context manager aspect of the class
+# (__new__ + __init__ has been called, but __enter__ has not)
 @pytest.fixture
 def session_configured(fake_env):
     """
     Return a DatabaseSession instance after env vars have been loaded,
-    but before entering the context manager (__init__ has been called, but __enter__ has not).
+    but before entering the context manager.
     """
     return DatabaseSession()
 
 
-# Use to test how the class operates once it is instanziated
+# Use to test how an instance of the class works, once it has been initialized
+# (__enter__ has been called, but not __exit__ yet, so it is the yield that is being tested
 @pytest.fixture
 def db_session(fake_env):
     with DatabaseSession() as session:
