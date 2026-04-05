@@ -1,7 +1,5 @@
 import pytest
 
-from db_session import DatabaseSession
-
 
 ######################
 ###    FIXTURES    ###

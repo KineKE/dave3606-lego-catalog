@@ -7,11 +7,10 @@ import html
 from flask import Response, request, Blueprint, render_template, jsonify
 from time import perf_counter
 
-from database_session import DatabaseSession
-from database import Database
-import queries
-import kine
-from queries import get_all_sets
+from .database_session import DatabaseSession
+from .database import Database
+from . import queries
+from . import kine
 
 bp = Blueprint('main', __name__, template_folder="templates")
 
@@ -22,14 +21,12 @@ def index():
 
 @bp.route("/sets")
 def sets():
-    """
-    Takes ?? and returns a Response?
-    :return:
-    """
 
     with DatabaseSession() as session:
         start_time = perf_counter()
         db = Database(session)
+
+
         query = get_all_sets()
 
         print(f"Time to render all sets: {perf_counter() - start_time}")
