@@ -1,6 +1,6 @@
 """
-This __init__.py file is apparently useful for app creation in terms of separation of concerns, and it normally used
-to create an app factory pattern.
+This __init__.py file is apparently useful for app creation in terms of separation of concerns,
+and it normally used to create an app factory pattern.
 """
 
 from flask import Flask

@@ -2,8 +2,8 @@
 Database access helpers for the application.
 
 This module provides a small wrapper around the active DatabaseSession.
-It centralizes cursor handling and common query execution patterns so that routes and other application code
-do not need to work with cursors directly.
+It centralizes cursor handling and common query execution patterns so that routes and
+other application code do not need to work with cursors directly.
 """
 
 from contextlib import contextmanager
@@ -13,8 +13,8 @@ class Database:
     """
     Provide convenience methods for executing SQL within an active database session.
 
-    This class does not open or close database connections itself. Instead, it operates on a DatabaseSession object,
-    which is responsible for connection lifecycle and transaction handling.
+    This class does not open or close database connections itself. Instead, it operates on a
+    DatabaseSession object, which is responsible for connection lifecycle and transaction handling.
     """
     def __init__(self, db_session):
         """
@@ -42,7 +42,8 @@ class Database:
         Execute an SQL query and yield the cursor used for execution.
 
         This helper centralizes the shared pattern of getting a cursor, executing a query, and then
-        allowing the caller to decide whether to fetch one row, fetch all rows, or complete the statement.
+        allowing the caller to decide whether to fetch one row, fetch all rows,
+        or complete the statement.
 
         :param query: The SQL query to execute.
         :param params: Optional query parameters passed to psycopg.
@@ -57,8 +58,8 @@ class Database:
         """
         Execute an SQL query that does not need to return rows.
 
-        This method is intended for statements such as INSERT, UPDATE, DELETE or DDL operations where no
-        result set needs to be fetched.
+        This method is intended for statements such as INSERT, UPDATE, DELETE or DDL operations
+        where no result set needs to be fetched.
 
         :param query: The SQL query to execute.
         :param params: Optional query parameters passed to psycopg.
