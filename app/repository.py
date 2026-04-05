@@ -1,3 +1,0 @@
-"""
-Module text goes here.
-"""

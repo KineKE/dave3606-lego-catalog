@@ -3,7 +3,7 @@ install:
 	pip install -r requirements.txt
 
 # Set up environment variables
-env:
+create-env:
 	cp .env.example .env
 
 # Database setup and migration

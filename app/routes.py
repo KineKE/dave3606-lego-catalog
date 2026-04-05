@@ -7,48 +7,54 @@ import html
 from flask import Response, request, Blueprint, render_template, jsonify
 from time import perf_counter
 
-from app.db_connection import get_connection
+from .database_session import DatabaseSession
+from .database import Database
+from . import queries
+from . import kine
 
-bp = Blueprint('main', __name__)
+bp = Blueprint('main', __name__, template_folder="templates")
 
 
 @bp.route("/")
 def index():
-    template = open("app/templates/index.html").read()
-    return Response(template)
-
+    return render_template("index.html")
 
 @bp.route("/sets")
 def sets():
-    """
-    Takes ?? and returns a Response?
-    :return:
-    """
-    template = open("app/templates/sets.html").read()
-    rows = ""
 
-    start_time = perf_counter()
-    conn = get_connection()
-    try:
-        with conn.cursor() as cur:
-            cur.execute("select id, name from lego_set order by id")
-            for row in cur.fetchall():
-                html_safe_id = html.escape(row[0])
-                html_safe_name = html.escape(row[1])
-                existing_rows = rows
-                rows = existing_rows + f'<tr><td><a href="/set?id={html_safe_id}">{html_safe_id}</a></td><td>{html_safe_name}</td></tr>\n'
+    with DatabaseSession() as session:
+        start_time = perf_counter()
+        db = Database(session)
+
+
+        query = get_all_sets()
+
         print(f"Time to render all sets: {perf_counter() - start_time}")
-    finally:
-        conn.close()
+
+
 
     page_html = template.replace("{ROWS}", rows)
     return Response(page_html, content_type="text/html")
 
 
+
+
+    template = open("app/templates/sets.html").read()
+    rows = ""
+
+
+            for row in cur.fetchall():
+                html_safe_id = html.escape(row[0])
+                html_safe_name = html.escape(row[1])
+                existing_rows = rows
+                rows = existing_rows + f'<tr><td><a href="/set?id={html_safe_id}">{html_safe_id}</a></td><td>{html_safe_name}</td></tr>\n'
+
+
+
+
 @bp.route("/set")
 def lego_set():  # We don't want to call the function `set`, since that would hide the `set` data type.
-    template = open("app/templates/set.html").read()
-    return Response(template)
+    return render_template("set.html")
 
 
 @bp.route("/api/set")

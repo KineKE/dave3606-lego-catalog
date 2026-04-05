@@ -1,7 +1,6 @@
 import json
 import gzip
 from collections import defaultdict
-from app.database import get_connection
 
 conn = get_connection()
 
