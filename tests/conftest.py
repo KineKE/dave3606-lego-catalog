@@ -1,9 +1,5 @@
-"""
-
-"""
-
 import pytest
-from database_session import DatabaseSession
+from app.database_session import DatabaseSession
 
 
 # Use to mock the .env file
@@ -31,10 +27,14 @@ def session_configured(fake_env):
     return DatabaseSession()
 
 
-# Use to test how an instance of the class works, once it has been initialized
+# Use to test how an instance of the class works, once it has been created as a context manager
 # (__enter__ has been called, but not __exit__ yet, so it is the yield that is being tested
 @pytest.fixture
 def db_session(fake_env):
+    """
+    Return an open DatabaseSession inside the context manager.
+    Teardown happens automatically when the test finishes.
+    """
     with DatabaseSession() as session:
         yield session
 
