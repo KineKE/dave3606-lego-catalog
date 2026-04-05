@@ -891,39 +891,14 @@ Analyse the code:
 
 The code does following
 
-1. Opens the HTML
-2. Creates an empty string
-3. Gets ALL (id, name) and orders it by the id in the lego set
-4. Then loops through each row (each set) and does:
-   - escape on both entries in the row (id, name) (in other words, the entries in columns 1 and 2 for that row)
-   - creates a variable called and set it to the value "rows" to be a new variable called "existing_rows"
-   - then sets "rows" to be the value of "existing rows"
-   - then says that rows is existing rows (which is empty to begin with, I assume?) and then 
-
+The code gets all rows from the database and then goes through the rows one by one. 
+It appends the current row to the string object. The issue is, that the string object is immutable.
+That means that a new object has to be created, and for that to happen, the object needs to be looped through.
+So for each new row, the fetchall is larger, and the string object being looped through is larger, as well.
+This is effectively a O(n2) runtime.
     
-```python
-@app.route("/sets")
-def sets():
-    template = open("app/templates/sets.html").read()
-    rows = ""
-
-    start_time = perf_counter()
-    conn = get_connection()
-    try:
-        with conn.cursor() as cur:
-            cur.execute("select id, _name from lego_set order by id")
-            for row in cur.fetchall():
-                html_safe_id = html.escape(row[0])
-                html_safe_name = html.escape(row[1])
-                existing_rows = rows
-                rows = existing_rows + f'<tr><td><a href="/set?id={html_safe_id}">{html_safe_id}</a></td><td>{html_safe_name}</td></tr>\n'
-        print(f"Time to render all sets: {perf_counter() - start_time}")
-    finally:
-        conn.close()
-
-    page_html = template.replace("{ROWS}", rows)
-    return Response(page_html, content_type="text/html")
-```
+After cleaning up the endpoint:
+Time to render all sets: 1.1511313959781546
 
 
 ## Task 4 — Encoding, compression, and file handle leaks
