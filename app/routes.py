@@ -7,10 +7,9 @@ import html
 from flask import Response, request, Blueprint, render_template, jsonify
 from time import perf_counter
 
+from . import queries
 from .database_session import DatabaseSession
 from .database import Database
-from . import queries
-from . import kine
 
 bp = Blueprint('main', __name__, template_folder="templates")
 
@@ -19,37 +18,31 @@ bp = Blueprint('main', __name__, template_folder="templates")
 def index():
     return render_template("index.html")
 
+
 @bp.route("/sets")
 def sets():
+    with open("app/templates/sets.html") as f:
+        template = f.read()
 
     with DatabaseSession() as session:
         start_time = perf_counter()
         db = Database(session)
+        result = db.fetch_all(queries.get_all_sets())
 
+        rows = []
+        for row in result:
+            html_safe_id = html.escape(row[0])
+            html_safe_name = html.escape(row[1])
 
-        query = get_all_sets()
+            rows.append(
+                f'<tr><td><a href="/set?id={html_safe_id}">{html_safe_id}</a></td><td>{html_safe_name}</td></tr>\n'
+            )
 
+        rows = "\n".join(rows)
         print(f"Time to render all sets: {perf_counter() - start_time}")
-
-
 
     page_html = template.replace("{ROWS}", rows)
     return Response(page_html, content_type="text/html")
-
-
-
-
-    template = open("app/templates/sets.html").read()
-    rows = ""
-
-
-            for row in cur.fetchall():
-                html_safe_id = html.escape(row[0])
-                html_safe_name = html.escape(row[1])
-                existing_rows = rows
-                rows = existing_rows + f'<tr><td><a href="/set?id={html_safe_id}">{html_safe_id}</a></td><td>{html_safe_name}</td></tr>\n'
-
-
 
 
 @bp.route("/set")
