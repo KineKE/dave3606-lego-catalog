@@ -1,13 +1,17 @@
 import pytest
+from unittest.mock import MagicMock, patch
+
 from app.database_session import DatabaseSession
+from app.database import Database
 
 
-# Use to mock the .env file
 @pytest.fixture
 def fake_env(monkeypatch):
     """
     Provides a predictable database environment variables for testing.
     Monkeypatch automatically restores the original environment afterward.
+
+    This avoids it depending on the developer's real shell environment or .env file.
     """
     monkeypatch.setenv("DB_HOST", "localhost")
     monkeypatch.setenv("DB_PORT", "9876")
@@ -16,27 +20,67 @@ def fake_env(monkeypatch):
     monkeypatch.setenv("POSTGRES_PASSWORD", "bricks")
 
 
-# Use to test the context manager aspect of the class
-# (__new__ + __init__ has been called, but __enter__ has not)
 @pytest.fixture
 def session_configured(fake_env):
     """
-    Return a DatabaseSession instance after env vars have been loaded,
-    but before entering the context manager.
+    Return a DatabaseSession instance after initialization, but before entering the context manager.
+
+    Use this fixture for testing that verifies:
+    - environment variable loading
+    - validation behavior
+    - inactive session behavior
     """
     return DatabaseSession()
 
 
-# Use to test how an instance of the class works, once it has been created as a context manager
-# (__enter__ has been called, but not __exit__ yet, so it is the yield that is being tested
 @pytest.fixture
-def db_session(fake_env):
+def fake_cursor():
     """
-    Return an open DatabaseSession inside the context manager.
-    Teardown happens automatically when the test finishes.
+    Return a mock cursor that supports context manager usage.
+
+    This allows Database._get_cursor() to use:
+        with connection.cursor() as cursor:
+            ...
     """
-    with DatabaseSession() as session:
-        yield session
+    cursor = MagicMock()
+    cursor.__enter__.return_value = cursor
+    cursor.__exit__.return_value = None
+    return cursor
 
 
+@pytest.fixture
+def fake_connection(fake_cursor):
+    """
+    Return a mock database connection.
 
+    The mock supports:
+    - cursor()
+    - commit()
+    - rollback()
+    - close()
+    """
+    connection = MagicMock()
+    connection.cursor.return_value = fake_cursor
+    return connection
+
+
+@pytest.fixture
+def fake_active_session(fake_env, fake_connection):
+    """
+    Return an active DatabaseSession whose psycopg connection is mocked.
+
+    This fixture is useful when testing code that requires a live session,
+    but should not talk to a real PostgreSQL database.
+    """
+    with patch("app.database_session.psycopg.connect", return_value = fake_connection):
+        with DatabaseSession() as session:
+            yield session
+
+@pytest.fixture
+def database(fake_active_session):
+    """
+    Return a Database helper bound to an active session with a mocked connection.
+
+    Use this for tests for execute(), fetch_one(), and fetch_all().
+    """
+    return Database(fake_active_session)
