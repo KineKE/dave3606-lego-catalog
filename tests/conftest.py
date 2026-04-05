@@ -65,16 +65,26 @@ def fake_connection(fake_cursor):
 
 
 @pytest.fixture
-def fake_active_session(fake_env, fake_connection):
+def connect_patched(fake_connection):
+    """
+    Patch psycopg.connect so DatabaseSession receives a fake connection.
+    Yield the mocked connection so tests can assert how it was called.
+    """
+    with patch("app.database_session.psycopg.connect", return_value=fake_connection) as mock_connect:
+        yield mock_connect
+
+
+@pytest.fixture
+def fake_active_session(fake_env, connect_patched):
     """
     Return an active DatabaseSession whose psycopg connection is mocked.
 
     This fixture is useful when testing code that requires a live session,
     but should not talk to a real PostgreSQL database.
     """
-    with patch("app.database_session.psycopg.connect", return_value = fake_connection):
-        with DatabaseSession() as session:
-            yield session
+    with DatabaseSession() as session:
+        yield session
+
 
 @pytest.fixture
 def database(fake_active_session):
