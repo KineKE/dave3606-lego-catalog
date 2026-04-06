@@ -1,22 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>All Lego sets</title>
-        <link rel="icon" type="image/png" href="/static/amazing_favicon.png">
-        <style>
-            body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
-            table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-            th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd; }
-            th { font-weight: 600; }
-        </style>
-    </head>
-    <body>
-        <h1>All Lego sets</h1>
-        <table>
-            <thead><tr><th>Id</th><th>Name</th></tr></thead>
-            <tbody>{ROWS}</tbody>
-        </table>
-    </body>
+<head>
+    {META_CHARSET}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All LEGO sets</title>
+    <link rel="icon" type="image/png" href="/static/amazing_favicon.png">
+     <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <main class="page-shell">
+        <header class="site-header">
+            <img
+                src="/static/amazing_all_sets.svg"
+                alt="All Lego sets"
+                class="subpage-title-image"
+            >
+        </header>
+
+        <section class="content-card">
+            <div class="action-row">
+                <a class="cute-link-button" href="/">Back home</a>
+            </div>
+
+            <div class="table-wrap">
+                <table class="lego-table">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>{ROWS}</tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
 </html>

@@ -1,22 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Lego database</title>
-        <link rel="icon" type="image/png" href="../static/amazing_favicon.png">
-        <link rel="stylesheet" href="../static/style.css">
-    </head>
-    <body>
-        <h1>Lego database</h1>
-        <p><a href="/sets">All Lego sets</a></p>
-        <form method="get" action="/set">
-            Set id: <input type="text" name="id"/> <input type="submit" value="Find">
-        </form>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEGO Database</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='amazing_favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="page-shell">
+        <header class="site-header">
+            <img
+                src="{{ url_for('static', filename='amazing_title.svg') }}"
+                alt="Lego Database"
+                class="site-title-image"
+            >
+            <p class="site-subtitle">
+                Browse sets, search by ID, and cause minor Lego weather events.
+            </p>
+        </header>
 
-        <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
-        <script src="../static/script.js"></script>
-        <button onclick="legoRain()">Make it rain!</button>
-    </body>
+        <section class="content-card">
+            <button type="button" class="rain-button" onclick="legoRain()">Make it rain!</button>
 
+            <div class="action-row">
+                <a class="cute-link-button" href="/sets">All Lego sets</a>
+            </div>
+
+            <form class="search-form" method="get" action="/set">
+                <label for="set-id">Set id</label>
+                <div class="search-row">
+                    <input type="text" id="set-id" name="id" placeholder="e.g. 10297">
+                    <button type="submit" class="cute-button secondary-button">Find</button>
+                </div>
+            </form>
+
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
 </html>
