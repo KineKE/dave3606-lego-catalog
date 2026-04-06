@@ -3,13 +3,13 @@ Module text goes here.
 """
 
 import json
-import html
-from flask import Response, request, Blueprint, render_template, jsonify
+from flask import Response, request, Blueprint, render_template
 from time import perf_counter
 
-from . import queries
+from .queries import get_all_sets
 from .database_session import DatabaseSession
 from .database import Database
+from .router_utils import build_rows
 
 bp = Blueprint('main', __name__, template_folder="templates")
 
@@ -27,22 +27,16 @@ def sets():
     with DatabaseSession() as session:
         start_time = perf_counter()
         db = Database(session)
-        result = db.fetch_all(queries.get_all_sets())
-
-        rows = []
-        for row in result:
-            html_safe_id = html.escape(row[0])
-            html_safe_name = html.escape(row[1])
-
-            rows.append(
-                f'<tr><td><a href="/set?id={html_safe_id}">{html_safe_id}</a></td><td>{html_safe_name}</td></tr>\n'
-            )
-
-        rows = "\n".join(rows)
+        result = db.fetch_all(get_all_sets())
+        rows = build_rows(result)
         print(f"Time to render all sets: {perf_counter() - start_time}")
 
+
+    encoding = "blabla"
+
     page_html = template.replace("{ROWS}", rows)
-    return Response(page_html, content_type="text/html")
+    return Response(page_html, content_type=f"text/html;"
+                                            f"{encoding}")
 
 
 @bp.route("/set")
