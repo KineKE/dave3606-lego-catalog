@@ -903,9 +903,24 @@ Time to render all sets: 1.1511313959781546
 
 ## Task 4 — Encoding, compression, and file handle leaks
 
-*No report explanations for this section.*
+### Encoding
+
+
+### Compression
+
+### File handle leaks
+There are no longer any file handle leaks in any of the files. They have all been solved with a 
+context manager of some kind. The templates being opened (and not closed) are mostly solved by
+using `with open()`, which closes the file handle on `__exit__`.
+
 
 ## Task 5 — File formats
+
+### JSON format implementation
+
+### Custom binary file format
+
+### Console application
 
 - Design your own binary file format for representing a LEGO set and its inventory. Describe the file format in the report.
 
