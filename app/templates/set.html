@@ -1,46 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Lego set</title>
-        <link rel="icon" type="image/png" href="../static/amazing_favicon.png">
-        <style>
-            body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
-            table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-            th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd; }
-            th { font-weight: 600; }
-            #error { color: red; }
-        </style>
-    </head>
-    <body>
-        <h1>Lego set</h1>
-        <div id="error"></div>
-        <p><strong>Set id:</strong> <span id="setId"></span></p>
-        <p><strong>Set name:</strong> <span id="setName"></span></p>
-        <table>
-            <thead><tr><th>Image</th><th>Brick type</th><th>Color</th><th>Count</th></tr></thead>
-            <tbody id="inventory"></tbody>
-        </table>
-        <script>
-            const urlParameters = new URLSearchParams(document.location.search);
-            const setId = urlParameters.get("id");
-            fetch(`/api/set?id=${setId}`)
-                .then(function(setData) { return setData.json(); })
-                .then(function(setJson) {
-                    const inventoryTable = document.getElementById("inventory");
-                    const inventoryRow = document.createElement("tr");
-                    inventoryRow.innerHTML = (
-                        "<td>Example row</td>" +
-                        "<td>to show how to</td>" +
-                        "<td>dynamically construct HTML</td>" +
-                        "<td>in JavaScript</td>"
-                    )
-                    inventoryTable.appendChild(inventoryRow);
-                })
-                .catch(function(err) {
-                    document.getElementById("error").textContent = "Failed to load data: " + err;
-                });
-        </script>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lego set</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='amazing_favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="page-shell">
+        <header class="site-header">
+            <img
+                src="{{ url_for('static', filename='amazing_lego_set.svg') }}"
+                alt="Lego set"
+                class="subpage-title-image"
+            >
+        </header>
+
+        <section class="content-card">
+            <div class="action-row">
+                <a class="cute-link-button" href="/">Back home</a>
+                <a class="cute-button secondary-button" href="/sets">All Lego sets</a>
+            </div>
+
+            <div id="error" class="error-message"></div>
+
+            <div class="set-meta">
+                <p><strong>Set id:</strong> <span id="setId"></span></p>
+                <p><strong>Set name:</strong> <span id="setName"></span></p>
+            </div>
+
+            <div class="table-wrap">
+                <table class="lego-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Brick type</th>
+                            <th>Color</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const urlParameters = new URLSearchParams(document.location.search);
+        const setId = urlParameters.get("id");
+
+        fetch(`/api/set?id=${setId}`)
+            .then(function(setData) {
+                return setData.json();
+            })
+            .then(function(setJson) {
+                document.getElementById("setId").textContent = setId ?? "";
+
+                if (setJson.name) {
+                    document.getElementById("setName").textContent = setJson.name;
+                }
+
+                const inventoryTable = document.getElementById("inventory");
+                const inventoryRow = document.createElement("tr");
+
+                inventoryRow.innerHTML =
+                    "<td>Example row</td>" +
+                    "<td>to show how to</td>" +
+                    "<td>dynamically construct HTML</td>" +
+                    "<td>in JavaScript</td>";
+
+                inventoryTable.appendChild(inventoryRow);
+            })
+            .catch(function(err) {
+                document.getElementById("error").textContent = "Failed to load data: " + err;
+            });
+    </script>
+</body>
 </html>
