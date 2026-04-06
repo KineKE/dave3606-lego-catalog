@@ -9,7 +9,7 @@ from time import perf_counter
 from .queries import get_all_sets
 from .database_session import DatabaseSession
 from .database import Database
-from .router_utils import build_rows, get_encoding, replace_placeholders
+from .routes_utils import build_rows, get_encoding, replace_placeholders
 
 bp = Blueprint('main', __name__, template_folder="templates")
 
@@ -24,7 +24,7 @@ def sets():
     encoding = get_encoding(request)
     meta_charset = '<meta charset="UTF-8">' if encoding == "utf-8" else ""
 
-    with open("app/templates/sets.html") as f:
+    with open("app/templates/sets.html", "r", encoding="utf-8") as f:
         template = f.read()
 
     with DatabaseSession() as session:
@@ -39,8 +39,7 @@ def sets():
     compressed_html = gzip.compress(encoded_html)
 
     return Response(compressed_html,
-                    content_type=f"text/html;"
-                                 f"charset={encoding}",
+                    content_type=f"text/html; charset={encoding}",
                     headers={"Content-Encoding": "gzip"})
 
 
