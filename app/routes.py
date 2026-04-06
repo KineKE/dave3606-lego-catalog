@@ -1,7 +1,7 @@
 """
 Module text goes here.
 """
-
+import gzip
 import json
 from flask import Response, request, Blueprint, render_template
 from time import perf_counter
@@ -9,7 +9,7 @@ from time import perf_counter
 from .queries import get_all_sets
 from .database_session import DatabaseSession
 from .database import Database
-from .router_utils import build_rows
+from .router_utils import build_rows, get_encoding, replace_placeholders
 
 bp = Blueprint('main', __name__, template_folder="templates")
 
@@ -21,6 +21,9 @@ def index():
 
 @bp.route("/sets")
 def sets():
+    encoding = get_encoding(request)
+    meta_charset = '<meta charset="UTF-8">' if encoding == "utf-8" else ""
+
     with open("app/templates/sets.html") as f:
         template = f.read()
 
@@ -31,16 +34,18 @@ def sets():
         rows = build_rows(result)
         print(f"Time to render all sets: {perf_counter() - start_time}")
 
+    page_html = replace_placeholders(template, meta_charset, rows)
+    encoded_html = page_html.encode(encoding)
+    compressed_html = gzip.compress(encoded_html)
 
-    encoding = "blabla"
-
-    page_html = template.replace("{ROWS}", rows)
-    return Response(page_html, content_type=f"text/html;"
-                                            f"{encoding}")
+    return Response(compressed_html,
+                    content_type=f"text/html;"
+                                 f"charset={encoding}",
+                    headers={"Content-Encoding": "gzip"})
 
 
 @bp.route("/set")
-def lego_set():  # We don't want to call the function `set`, since that would hide the `set` data type.
+def lego_set():  # We don't want to call the function `set`, that would hide the `set` data type.
     return render_template("set.html")
 
 
