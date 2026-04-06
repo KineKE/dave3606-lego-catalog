@@ -18,7 +18,7 @@ def get_one_set(set_id):
            SELECT id, name
            FROM lego_set
            WHERE id = %s
-           """, set_id
+           """
 
     params = (set_id,)
 
