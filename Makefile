@@ -8,9 +8,9 @@ create-env:
 
 # Database setup and migration
 setup-db:
-	./db_setup/scripts/create_and_run_database.sh
-	./db_setup/setup_database.py
-	./db_setup/seed_database.py
+	./db_setup/scripts/create_and_run_db.sh
+	python ./db_setup/setup_database.py
+	python ./db_setup/seed_database.py
 
 # Start the Docker container with the database
 start-db:
@@ -22,7 +22,7 @@ stop-db:
 
 # Connect to the database (after it has been started)
 connect-db:
-	./db_setup/scripts/connect_to_database.sh
+	./db_setup/scripts/connect_to_db.sh
 
 # Run the web app
 run:
