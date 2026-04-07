@@ -57,9 +57,9 @@
             .then(function(setJson) {
                 document.getElementById("setId").textContent = setId ?? "";
 
-                if (setJson.name) {
-                    document.getElementById("setName").textContent = setJson.name;
-                }
+                if (setJson.set && setJson.set.name) {
+                    document.getElementById("setName").textContent = setJson.set.name;
+}
 
                 const inventoryTable = document.getElementById("inventory");
                 const inventoryRow = document.createElement("tr");

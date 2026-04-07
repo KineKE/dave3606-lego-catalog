@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+
+import struct
+import sys
+
+
+def unpack_string(file_obj):
+    length_bytes = file_obj.read(2)
+    if len(length_bytes) != 2:
+        raise ValueError("Unexpected end of file while reading string length")
+
+    length = struct.unpack(">H", length_bytes)[0]
+    string_bytes = file_obj.read(length)
+
+    if len(string_bytes) != length:
+        raise ValueError("Unexpected end of file while reading string data")
+
+    return string_bytes.decode("utf-8")
+
+
+def read_kine_file(path):
+    with open(path, "rb") as f:
+        magic = f.read(4)
+        if magic != b"KINE":
+            raise ValueError("Not a valid .kine file")
+
+        version_bytes = f.read(1)
+        if len(version_bytes) != 1:
+            raise ValueError("Missing version byte")
+
+        version = struct.unpack(">B", version_bytes)[0]
+        if version != 1:
+            raise ValueError(f"Unsupported .kine version: {version}")
+
+        set_id = unpack_string(f)
+        set_name = unpack_string(f)
+
+        year_bytes = f.read(2)
+        if len(year_bytes) != 2:
+            raise ValueError("Unexpected end of file while reading year")
+        year = struct.unpack(">H", year_bytes)[0]
+
+        category = unpack_string(f)
+
+        count_bytes = f.read(4)
+        if len(count_bytes) != 4:
+            raise ValueError("Unexpected end of file while reading inventory count")
+        inventory_count = struct.unpack(">I", count_bytes)[0]
+
+        inventory = []
+        for _ in range(inventory_count):
+            brick_type_id = unpack_string(f)
+            color_id = unpack_string(f)
+            brick_name = unpack_string(f)
+
+            quantity_bytes = f.read(4)
+            if len(quantity_bytes) != 4:
+                raise ValueError("Unexpected end of file while reading quantity")
+            quantity = struct.unpack(">I", quantity_bytes)[0]
+
+            inventory.append({
+                "brick_type_id": brick_type_id,
+                "color_id": color_id,
+                "name": brick_name,
+                "quantity": quantity,
+            })
+
+    return {
+        "set": {
+            "id": set_id,
+            "name": set_name,
+            "year": year,
+            "category": category,
+        },
+        "inventory": inventory,
+    }
+
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: kinecat <file.kine>")
+        sys.exit(1)
+
+    path = sys.argv[1]
+
+    try:
+        data = read_kine_file(path)
+    except Exception as e:
+        print(f"kinecat: error: {e}")
+        sys.exit(1)
+
+    print("Set")
+    print(f"  ID: {data['set']['id']}")
+    print(f"  Name: {data['set']['name']}")
+    print(f"  Year: {data['set']['year']}")
+    print(f"  Category: {data['set']['category']}")
+    print()
+    print("Inventory")
+
+    for item in data["inventory"]:
+        print(
+            f"  {item['quantity']}x {item['name']} "
+            f"(brick_type_id={item['brick_type_id']}, color_id={item['color_id']})"
+        )
+
+
+if __name__ == "__main__":
+    main()
