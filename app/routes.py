@@ -6,6 +6,7 @@ import json
 from flask import Response, request, Blueprint, render_template
 from time import perf_counter
 
+from .cache import LRUCache
 from .kine import build_kine_bytes
 from .queries import get_all_sets, get_set_with_inventory
 from .database_session import DatabaseSession
@@ -20,6 +21,8 @@ from .routes_utils import (build_rows,
                            return_404_set_not_found_binary)
 
 bp = Blueprint('main', __name__, template_folder="templates")
+
+set_cache = LRUCache()
 
 
 @bp.route("/")
@@ -48,7 +51,8 @@ def sets():
 
     return Response(compressed_html,
                     content_type=f"text/html; charset={encoding}",
-                    headers={"Content-Encoding": "gzip"})
+                    headers={"Content-Encoding": "gzip",
+                             "Cache-Control": "public, max-age=60"})
 
 
 @bp.route("/set")
@@ -63,6 +67,17 @@ def api_set():
     if not set_id:
         return return_400_missing_set_id()
 
+    start_time = perf_counter()
+
+    cached_data = set_cache.get(set_id)
+    if cached_data is not None:
+        elapsed = perf_counter() - start_time
+        print(f"/api/set cache hit for {set_id}: {elapsed:.6f} seconds")
+        return Response(
+            json.dumps(cached_data, indent=4),
+            content_type="application/json"
+        )
+
     with DatabaseSession() as session:
         db = Database(session)
         query, params = get_set_with_inventory(set_id)
@@ -72,6 +87,11 @@ def api_set():
 
     if data is None:
         return return_404_set_not_found()
+
+    set_cache.put(set_id, data)
+
+    elapsed = perf_counter() - start_time
+    print(f"/api/set cache miss for {set_id}: {elapsed:.6f} seconds")
 
     return Response(
         json.dumps(data, indent=4),
