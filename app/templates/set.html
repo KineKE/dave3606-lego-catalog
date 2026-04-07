@@ -8,73 +8,97 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <main class="page-shell">
-        <header class="site-header">
-            <img
+<main class="page-shell">
+    <header class="site-header">
+        <img
                 src="{{ url_for('static', filename='amazing_lego_set.svg') }}"
                 alt="Lego set"
                 class="subpage-title-image"
-            >
-        </header>
+        >
+    </header>
 
-        <section class="content-card">
-            <div class="action-row">
-                <a class="cute-link-button" href="/">Back home</a>
-                <a class="cute-button secondary-button" href="/sets">All Lego sets</a>
-            </div>
+    <section class="content-card">
+        <div class="action-row">
+            <a class="cute-link-button" href="/">Back home</a>
+            <a class="cute-link-button secondary-button" href="/sets">All Lego sets</a>
+        </div>
 
-            <div id="error" class="error-message"></div>
+        <div id="error" class="error-message"></div>
 
-            <div class="set-meta">
-                <p><strong>Set id:</strong> <span id="setId"></span></p>
-                <p><strong>Set name:</strong> <span id="setName"></span></p>
-            </div>
+        <div class="set-meta">
+            <p><strong>Set id:</strong> <span id="setId"></span></p>
+            <p><strong>Set name:</strong> <span id="setName"></span></p>
+        </div>
 
-            <div class="table-wrap">
-                <table class="lego-table">
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Brick type</th>
-                            <th>Color</th>
-                            <th>Count</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inventory"></tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+        <div class="table-wrap">
+            <table class="lego-table">
+                <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Brick type</th>
+                    <th>Color</th>
+                    <th>Count</th>
+                </tr>
+                </thead>
+                <tbody id="inventory"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
 
-    <script>
-        const urlParameters = new URLSearchParams(document.location.search);
-        const setId = urlParameters.get("id");
+<script>
+    async function loadSet() {
+        const params = new URLSearchParams(window.location.search);
+        const setId = params.get("id");
 
-        fetch(`/api/set?id=${setId}`)
-            .then(function(setData) {
-                return setData.json();
-            })
-            .then(function(setJson) {
-                document.getElementById("setId").textContent = setId ?? "";
+        const errorElement = document.getElementById("error");
+        const setIdElement = document.getElementById("setId");
+        const setNameElement = document.getElementById("setName");
+        const inventoryBody = document.getElementById("inventory");
 
-                if (setJson.set && setJson.set.name) {
-                    document.getElementById("setName").textContent = setJson.set.name;
-}
+        if (!setId) {
+            errorElement.textContent = "Missing set id.";
+            return;
+        }
 
-                const inventoryTable = document.getElementById("inventory");
-                const inventoryRow = document.createElement("tr");
+        try {
+            const response = await fetch(`/api/set?id=${encodeURIComponent(setId)}`);
 
-                inventoryRow.innerHTML =
-                    "<td>Example row</td>" +
-                    "<td>to show how to</td>" +
-                    "<td>dynamically construct HTML</td>" +
-                    "<td>in JavaScript</td>";
+            if (!response.ok) {
+                if (response.status === 404) {
+                    errorElement.textContent = "Set not found.";
+                } else {
+                    errorElement.textContent = "Could not load set.";
+                }
+                return;
+            }
 
-                inventoryTable.appendChild(inventoryRow);
-            })
-            .catch(function(err) {
-                document.getElementById("error").textContent = "Failed to load data: " + err;
-            });
-    </script>
+            const data = await response.json();
+
+            setIdElement.textContent = data.set.id;
+            setNameElement.textContent = data.set.name;
+
+            inventoryBody.innerHTML = "";
+
+            for (const item of data.inventory) {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td></td>
+                    <td>${item.name} (${item.brick_type_id})</td>
+                    <td>${item.color_id}</td>
+                    <td>${item.quantity}</td>
+                `;
+
+                inventoryBody.appendChild(row);
+            }
+        } catch (error) {
+            errorElement.textContent = "Something went wrong while loading the set.";
+            console.error(error);
+        }
+    }
+
+    loadSet();
+</script>
 </body>
 </html>
