@@ -2,6 +2,9 @@ import html
 
 from flask import Response, json
 
+from .kine import build_kine_bytes
+from .queries import get_set_with_inventory, get_all_sets
+
 
 def build_rows(query_result):
     rows = []
@@ -41,7 +44,6 @@ def get_encoding(request):
 
 
 def build_set_response(rows):
-
     if not rows:
         return None
 
@@ -69,7 +71,7 @@ def build_set_response(rows):
     }
 
 
-def return_400_missing_set_id():
+def build_400_response():
     return Response(
         json.dumps({"error": "Missing set id"}, indent=4),
         status=400,
@@ -77,7 +79,7 @@ def return_400_missing_set_id():
     )
 
 
-def return_400_missing_set_id_binary():
+def build_400_response_binary():
     return Response(
         b"Missing set id",
         status=400,
@@ -85,7 +87,7 @@ def return_400_missing_set_id_binary():
     )
 
 
-def return_404_set_not_found():
+def build_404_response():
     return Response(
         json.dumps({"error": "Set not found"}, indent=4),
         status=404,
@@ -93,9 +95,76 @@ def return_404_set_not_found():
     )
 
 
-def return_404_set_not_found_binary():
+def build_404_response_binary():
     return Response(
         b"Set not found",
         status=404,
         content_type="text/plain; charset=utf-8"
     )
+
+
+def return_cached_data(cached_data):
+    return Response(
+        json.dumps(cached_data, indent=4),
+        content_type="application/json"
+    )
+
+
+def build_set_json(db, set_id, cache=None):
+    if not set_id:
+        return None, 400
+
+    if cache is not None:
+        cached_data = cache.get(set_id)
+        if cached_data is not None:
+            return json.dumps(cached_data, indent=4), 200
+
+    query, params = get_set_with_inventory(set_id)
+    rows = db.fetch_all(query, params)
+
+    data = build_set_response(rows)
+    if data is None:
+        return None, 404
+
+    if cache is not None:
+        cache.put(set_id, data)
+
+    return json.dumps(data, indent=4), 200
+
+
+def build_sets_page_html(db, template, meta_charset):
+    rows = db.fetch_all(get_all_sets())
+    rendered_rows = build_rows(rows)
+    return replace_placeholders(template, meta_charset, rendered_rows)
+
+
+def build_set_binary_response(db, set_id):
+    if not set_id:
+        return None, 400
+
+    query, params = get_set_with_inventory(set_id)
+    rows = db.fetch_all(query, params)
+
+    data = build_set_response(rows)
+    if data is None:
+        return None, 404
+
+    return build_kine_bytes(data), 200
+
+
+def build_sets_response(compressed_html, encoding):
+    return Response(
+        compressed_html,
+        content_type=f"text/html; charset={encoding}",
+        headers={
+            "Content-Encoding": "gzip",
+            "Cache-Control": "public, max-age=60",
+        },
+    )
+
+
+def load_template():
+    with open("./app/templates/sets.html", "r", encoding="utf-8") as f:
+        template = f.read()
+
+    return template

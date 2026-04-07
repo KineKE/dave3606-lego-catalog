@@ -3,146 +3,66 @@
 
 ![LEGO banner](https://firstbook.org/wp-content/uploads/2022/08/lego-landing-page-hero.png)
 
+<!-- TOC -->
+* [DAVE3606 — Resource-efficient Programs Project — 2026](#dave3606--resource-efficient-programs-project--2026)
+  * [Design decisions](#design-decisions)
+  * [Task 1 — Add database constraints](#task-1--add-database-constraints)
+    * [Initial schema](#initial-schema)
+    * [Schema interpretation](#schema-interpretation)
+    * [Design reasoning](#design-reasoning)
+      * [Primary key choices](#primary-key-choices)
+      * [Foreign key choices](#foreign-key-choices)
+    * [Migration](#migration)
+      * [lego_set](#lego_set)
+      * [lego_brick](#lego_brick)
+      * [lego_inventory](#lego_inventory)
+    * [Improved schema](#improved-schema)
+  * [Task 2 — Design indexes for flexible queries](#task-2--design-indexes-for-flexible-queries)
+    * [SQL for index creation](#sql-for-index-creation)
+    * [Query 1 - Single index](#query-1---single-index)
+    * [Query 2 - Single index](#query-2---single-index)
+    * [Query 3 - Single index](#query-3---single-index)
+    * [Query 4 - Single index](#query-4---single-index)
+    * [Summary](#summary)
+    * [Index re-design](#index-re-design)
+    * [Query 1 — Composite index](#query-1--composite-index)
+    * [Query 2 — Composite index](#query-2--composite-index)
+    * [Query 3 — Composite index](#query-3--composite-index)
+    * [Query 4 — Composite index](#query-4--composite-index)
+    * [Conclusion](#conclusion)
+  * [Task 3 — Algorithmic complexity improvements](#task-3--algorithmic-complexity-improvements)
+  * [Task 4 — Encoding, compression, and file handle leaks](#task-4--encoding-compression-and-file-handle-leaks)
+    * [Encoding](#encoding)
+    * [Compression](#compression)
+    * [File handle leaks](#file-handle-leaks)
+  * [Task 5 — File formats](#task-5--file-formats)
+    * [JSON format implementation](#json-format-implementation)
+    * [Custom binary format](#custom-binary-format)
+      * [Producer](#producer)
+      * [Consumer](#consumer)
+      * [Using the custom `.kine` format](#using-the-custom-kine-format)
+  * [Task 6 — Frontend and caching](#task-6--frontend-and-caching)
+  * [Task 7 — Testing and dependency injection](#task-7--testing-and-dependency-injection)
+<!-- TOC -->
 
-## Table of Content
-- Design summary (departure from initial repo structure)
-- [Task 1 — Add database constraints](#task-1--add-database-constraints)
-- [Task 2 — Design indexes for flexible queries](#task-2--design-indexes-for-flexible-queries)
-- [Task 3 — Algorithmic complexity improvements](#task-3--algorithmic-complexity-improvements)
-- [Task 4 — Encoding, compression, and file handle leaks](#task-4--encoding-compression-and-file-handle-leaks)
-- [Task 5 — File formats](#task-5--file-formats)
-- [Task 6 — Frontend and caching](#task-6--frontend-and-caching)
-- [Task 7 — Testing and dependency injection](#task-7--testing-and-dependency-injection)
-
-
-
-## Additional design choices
-
-- App Factory Pattern
-Had to use Blueprint in order to get the routes to work properly then.
-Including a root-based entrypoint (run.py)
-
-- Including tox as a test suite + flake8 as a linter
-
-- The whole database class is one big context manager, so it can be used as such in the repository without having to create instances.
-
-- Using .env for variables (db-values)
-
-- Including a Makefile
-
-- Restructure the code base
-
-- app directory
-
-- init-file
-db-connection
-- kine
-- queries
-- routes
 
 ## Design decisions
 
+**Design summary**
 
-1) Adding a factory pattern to the Flask project.
+Compared with the original course starter code, I made a few larger structural changes:
+- Introduced an application factory in app/__init__.py and used run.py as the entrypoint
+- Replaced repeated database connection code with a dedicated DatabaseSession context manager
+- Added a Database helper class to centralize SQL execution
+- Moved SQL into queries.py
+- Added Makefile commands to simplify setup and execution
+- Added tests, tox, and flake8
+- Split database setup into a separate db_setup/ area
 
-A factory pattern.... blabla.
+These changes were mainly made to improve readability, reduce repeated code, and make the project easier to test and maintain.
 
-Implementing this by making run.py the main entrypoint for running the app by running the app = create_app() function.
-In this case, app refers to the folder for the source code for the app itself. 
-
-It consists of, among other things, an __init__.py file. This file create the function for create_app().
-It is, in other words, this file that does the actual app creation itself. An app constructor, if you will, which fits its file name.
-In the app creation file, the Blueprint is added. 
-
-The file called routes.py is the route handler, as the name suggests.
-In the original file, the app was created here, and the routes were attached to this app using @app.routes.
-Then the app was created if the file was run as a file (__main__), not as a module. So running this file, was how the server was created.
-This creates a high coupling and makes it harder to test.
-
-
-2) Removing the repeated DB_CONFIG files with the connected psycopg.connect(). This code was repeated a lot, exposes secrets, and would be hard to maintain if anything were to change.
-
-
-
-
-
-
-- Lower coupling
-- Easier to test
-- Greater separation of concern
-- Easier to scale
-
-
-### Overview of the current file structure
-
-#### Directories
-
-- app
--> this is where all of the running code lives
-
-- db_setup
--> this is where the initialization and setup of the database is
-
-- docs
--> this is where documentation for the project is located
-
-- tests
--> the test files for the project lives here
-
-
-#### Files
-
-##### app directory
-
-- static folder
-- templates folder
-- __init__.py
-- database_connection.py
-- kine.py
-- queries.py
-- routes.py
-
-##### db_setup directory
-
-- scripts directory
-- sql directory
-- db_seed_bricklink.json.gz
-- migrate_database.py
-- seed_database.py
-
-##### docs directory
-
-
-##### tests directory
-
-- monkeypatching
-- conftest
-
-- tox8
-- (flake8)
-
-##### misc in root
-
-- .env
--> the environments for the project
-
-- .env.example
--> a general template for how .env looks, that can be committed to git, so that others can insert their own info, such as passwords and usernames
-
-- Makefile
-
-- README.md
-
-- requirements.txt
-
-- run.py
-
-- tox.ini
-
-https://bjoernricks.github.io/posts/python/context-manager/
-
-
-
+Any changes to the database environment, such as the container name, host name, port etc. Make the changes in the .env-file.
+You do not need to make changes elsewhere. This is the one source of truth for environment loading, and it is not hardcoded anywhere else.
 
 
 ## Task 1 — Add database constraints
@@ -191,63 +111,19 @@ There are no established relations between the tables, even though most of the `
 
 #### Primary key choices
 
-A primary key adds two factors to the attribute candidate for a primary key constraint: uniqueness and not null constraint.
-Based on the table above on my [schema interpretation](#schema-interpretation), I am making the following choices for my primary keys:
-
-<h5 style="color: pink">lego_set — simple primary key</h5>
 The primary key for this table is straightforward. One row represents one unique LEGO set; therefore, the primary key will be placed on the `id`-column.
 
+For this table, the columns `brick_type_id` and `color_id` are natural candidates for primary keys.
 
-<h5 style="color: pink">lego_brick — composite primary key</h5>
-For this table, the columns `brick_type_id` and `color_id` are natural candidates for primary keys. 
-The question is whether to use both as a composite key, and if so: in what order? <br><br>
-The general formula for a permutation is:
-
-$$
-P(n,r) = \frac{n!}{(n-r)!}
-$$
-
-
-As I am ordering all the columns, r = n, therefore:
-
-$$
-P(n,n) = n!
-$$
-
-This means that the number of possible combinations for the primary key for `lego_brick` is:
-
-$$
-2! = 2
-$$
-
-This means that the composite primary key for this table can either of the following: 
-- (`brick_type_id`, `color_id`)
-- (`color_id`, `brick_type_id`). 
-
-By using the former as the primary key, queries searching for by `brick_type_id` will be sped up. Searching by `color_id`, however, will not be sped up by creating that particular primary key.
+By using (`brick_type_id`, `color_id`) as the primary key, queries searching for by `brick_type_id` will be sped up. Searching by `color_id`, however, will not be sped up by creating that particular primary key.
 This is due to how the ordering will be reflected in the index B-tree. The nodes will be sorted by `brick_type_id` primarily. All similar `brick_type_id`-items will be placed together.
 Then, secondarily, they will be grouped by their `color_id`. This is due to the lexographical sorting nature, also known as [Leftmost Prefix Rule](https://medium.com/@nitish.weaddo/how-sql-composite-indexes-work-the-leftmost-prefix-rule-and-b-tree-insights-ec2b78326b80).
-
-By using the latter as the primary key, the opposite logic will apply. I.e., the nodes will first be grouped together by `color_id`, and then by `brick_type_id`, hence speeding up queries based on `color_id`.
+By using (`color_id`, `brick_type_id`).  as the primary key, the opposite logic will apply. I.e., the nodes will first be grouped together by `color_id`, and then by `brick_type_id`, hence speeding up queries based on `color_id`.
 
 <h5 style="color: pink">lego_inventory — composite primary key</h5>
 
-The number of possible permutations for the primary key for this table is:
 
-$$
-3! = 6
-$$
-
-This means that this table has the following possibilities for the composite primary key:
-
-- (`set_id`, `brick_type_id`, `color_id`)
-- (`set_id`, `color_id`, `brick_type_id`)
-- (`brick_type_id`, `set_id`, `color_id`)
-- (`brick_type_id`, `color_id`, `set_id`)
-- (`color_id`, `set_id`, `brick_type_id`)
-- (`color_id`, `brick_type_id`, `set_id`)
-
-I am choosing the first option as the primary key for `lego_inventory`, as it feels like a natural ordering for what the rows should consist of. 
+I am choosing (`set_id`, `brick_type_id`, `color_id`) as the primary key for `lego_inventory`, as it feels like a natural ordering for what the rows should consist of. 
 This key will make searches by LEGO sets quick. Searches by the type of brick and the color of the bricks will, however, not be improved and may need their own indices.
 
 #### Foreign key choices
@@ -259,7 +135,8 @@ Likewise, I am placing a foreign key on the columns `brick_type_id` and `color_i
 
 ### Migration
 
-The migration is saved in a file called task1_constraints.py. 
+I updated the database by running the following code. It has since been added to the schema for the
+database.
 
 #### lego_set
 ```sql
@@ -875,27 +752,27 @@ This shows that index usefulness depends on selectivity and query shape, not onl
 
 ## Task 3 — Algorithmic complexity improvements
 
-- The endpoint http://localhost:5000/sets is quite slow.
-  - Analyze the code
-  - What time complexity does it have?
-
-
 Running the /sets:
 Time to render all sets: 8.774727322990657
 
 Ran it again:
 Time to render all sets: 11.497379831998842
 
+The /sets endpoint originally built HTML in an inefficient way. Repeated string concatenation 
+inside a loop can lead to quadratic behavior because each concatenation may copy the already-built
+string. In practice, that means that generating the full page can become unnecessarily slow when 
+many rows are present. This is inefficient because Python strings are immutable. 
+That means rows = rows + ... does not modify the existing string in place. 
+Instead, Python creates a brand new string each time, copying the old content and adding the 
+new content to it. As the string grows larger for every iteration, each new concatenation 
+becomes more expensive. The first few concatenations are small, but later ones must copy 
+increasingly large strings. 
 
-Analyse the code:
-
-The code does following
-
-The code gets all rows from the database and then goes through the rows one by one. 
-It appends the current row to the string object. The issue is, that the string object is immutable.
-That means that a new object has to be created, and for that to happen, the object needs to be looped through.
-So for each new row, the fetchall is larger, and the string object being looped through is larger, as well.
-This is effectively a O(n2) runtime.
+I changed this by collecting each table row in a list and then using "\n".join(rows) in 
+build_rows() inside app/routes_utils.py. This makes the main HTML row-generation step linear in 
+the number of rows, because each row string is created once and the final join is performed once.
+So the complexity was improved from approximately O(n²) string-building behavior to O(n) for 
+the row assembly step.
     
 After cleaning up the endpoint:
 Time to render all sets: 1.1511313959781546
@@ -903,12 +780,6 @@ Time to render all sets: 1.1511313959781546
 
 ## Task 4 — Encoding, compression, and file handle leaks
 
-### Encoding
-
-
-### Compression
-
-### File handle leaks
 There are no longer any file handle leaks in any of the files. They have all been solved with a 
 context manager of some kind. The templates being opened (and not closed) are mostly solved by
 using `with open()`, which closes the file handle on `__exit__`.
@@ -918,51 +789,123 @@ using `with open()`, which closes the file handle on `__exit__`.
 
 ### JSON format implementation
 
-### Custom binary file format
+The endpoint /api/set?id=<set_id> returns information about a LEGO set and its inventory as JSON. 
+The SQL query joins lego_set, lego_inventory, and lego_brick, and the rows are transformed into a 
+structured JSON object.
 
-### Console application
+Example:
+```text
+{
+    "set": {
+        "id": "10316-1",
+        "name": "Rivendell",
+        "year": 2023,
+        "category": "Icons"
+    },
+    "inventory": [
+        {
+            "brick_type_id": "3001",
+            "color_id": 1,
+            "name": "Brick 2 x 4",
+            "quantity": 12
+        }
+    ]
+}
+```
 
-- Design your own binary file format for representing a LEGO set and its inventory. Describe the file format in the report.
+### Custom binary format
 
-1) Producer
-- File name: KINE (KINE Is Not Encoding/KINE Is Nearly Efficient)
+I designed a custom binary format, `KINE` (KINE Is Not Encoding), with the extension `.kine`. 
+The corresponding reader tool is called `kinecat`, which reads a `.kine` file and prints 
+its contents in a human-readable format. It is like `cat`in the UNIX-system, but for `.kine`-files.
+*meow* 🐈
+
+The `.kine` format is big-endian, and begins with a 4-byte magic value (KINE) followed by a 1-byte version number. 
+Text fields are stored as UTF-8 strings prefixed with a 2-byte unsigned length. 
+The set metadata contains id, name, year, and category. The inventory section begins with a 4-byte 
+count of inventory rows, followed by repeated inventory records containing brick type id, color id, 
+brick name, and quantity. This makes the format easy to validate, extend, and parse sequentially.
+
+#### Producer
+- File name: KINE (KINE Is Not Encoding)
 - Extension: `.kine`
 - Description: a custom binary file format
 - Explanation: The flask endpoint creates the binary data
 
-Brainstorming - method names for the producer:
-- flatten_to_kine()
-- pack_kine()
-- flatten_to_kine()
-- serialize_kine()
-   
+The writer in `kine.py` does this:
+* 4 bytes magic header: KINE
+* 1 byte version: 1
+* set id as:
+    * 2-byte length
+    * UTF-8 bytes
+* set name as:
+    * 2-byte length
+    * UTF-8 bytes
+* year as 2 bytes
+* category as:
+    * 2-byte length
+    * UTF-8 bytes
+* inventory count as 4 bytes
+* then for each inventory item:
+    * brick_type_id as length-prefixed UTF-8 string
+    * color_id as length-prefixed UTF-8 string
+    * brick name as length-prefixed UTF-8 string
+    * quantity as 4 bytes
 
-2) Consumer
+#### Consumer
 <details>
   <Summary>File name: kinecat</Summary>
-  *Honorable mentions:*
-    - unkine 
-    - dekine
-    - kinedump
-
+    Honorable mentions: unkine, dekine, kinedump
 </details>
+
 Description: Like `.cat`, but for `.kine` files
 Explanation: This app reads the `.kine` binary file and prints the info
 
-Brainstorming - method names for kinecat:
-- is_kine()
-- read_kine()
-- parse_kine()
-- from_kine()
-- unpack_kine()
-- load_kine()
+#### Using the custom `.kine` format
 
+**1. Download a `.kine` file from the server**
+
+Start the application and open this URL in the browser:
+
+```text
+http://127.0.0.1:5000/api/set-binary?id=10316-1
+```
+
+This downloads the set in the custom binary format. The response is sent as
+paplication/octet-stream and is named `<set_id>.kine`.
+
+**2. Read the file with `kinecat`**
+
+Run it with Python:
+```text
+python app/kinecat 10316-1.kine
+```
 
 ## Task 6 — Frontend and caching
 
-- Add a server-side cache that stores the 100 most recently requested sets. Explain briefly in the report how the cache works, which eviction policy you chose, and what its complexity is.
-- Measure how much time the endpoint spends when the set inventory is cached vs. when it is not.
+I implemented a least-recently-used cache for the /api/set endpoint. The cache stores up to 100 Lego sets, where each 
+entry contains both the set metadata and its inventory. When a request arrives, the application first checks whether 
+the set id is already in the cache. On a cache hit, the cached result is returned immediately without querying 
+the database. On a cache miss, the application queries the database, constructs the JSON response, inserts it into 
+the cache, and returns it. When the cache is full, the least recently used entry is evicted. The cache was implemented 
+using Python’s OrderedDict, which gives O(1) lookup, update, and eviction.
+
 
 ## Task 7 — Testing and dependency injection
 
-*No report explanations for this section.*
+The original code used a global database connection, which makes code harder to test. I refactored the project so that 
+database work is performed through a DatabaseSession context manager and a Database helper class.
+
+DatabaseSession is responsible for:
+- loading environment variables,
+- validating required connection settings,
+- opening the psycopg connection,
+- committing on success,
+- rolling back on failure,
+- closing the connection afterwards.
+
+Database is responsible for:
+- creating cursors from the active session,
+- executing SQL,
+- returning one row or all rows through helper methods.
+

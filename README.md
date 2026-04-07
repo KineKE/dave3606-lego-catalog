@@ -1,22 +1,22 @@
 # DAVE3606 — Resource-efficient Programs Project — 2026
-> LEGO catalog database
+> LEGO catalog
 
 ![LEGO banner](https://firstbook.org/wp-content/uploads/2022/08/lego-landing-page-hero.png)
 
 
-## To Åsmund, Alexander and Nathaniel
+## Where the assignment tasks are implemented
+### To Åsmund, Alexander and Nathaniel
 
-| Task # |            Location            | Explanation                                                                      |
-|:------:|:------------------------------:|----------------------------------------------------------------------------------|
-| Report |         docs/report.md         | Describes design choices, SQL statements and performance reasoning               |
-| Task 1 | database/sql/01_constraints.py | Adds PK and FK constraints to the existing schema                                |
-| Task 2 |   database/sql/02_indexes.py   | Adds indexes to support brick-type and color-based searches combined with set id |
-| Task 3 |                                |                                                                                  |
-| Task 4 |                                |                                                                                  |
-| Task 5 |                                |                                                                                  |
-| Task 6 |                                |                                                                                  |
-| Task 7 |                                |                                                                                  |
-
+| Task # |                                  Location                                   | Explanation                                                                                                                      |
+|:------:|:---------------------------------------------------------------------------:|----------------------------------------------------------------------------------------------------------------------------------|
+| Report |                               docs/report.md                                | Describes design choices, SQL statements and performance reasoning                                                               |
+| Task 1 |                           db_setup/sql/schema.sql                           | Adds PK and FK constraints to the existing schema                                                                                |
+| Task 2 |                           db_setup/sql/schema.py                            | Adds indexes to support brick-type and color-based searches combined with set id                                                 |
+| Task 3 |                    app/routes.py  + app/routes_utils.py                     | Improving algorithmic complexity                                                                                                 |
+| Task 4 |                     app/routes.py + app/routes_utils.py                     | Encoding, compression, file handle safety                                                                                         |
+| Task 5 |                  app/kine.py + app/kinecat + app/routes.py                  | Creates JSON dump and custom binary file format + implements the logic in the endpoint                                           |
+| Task 6 | app/templates/set.html + app/cache.py + app/routes.py + app/routes_utils.py | Adds javascript to display the set inventory information + creates cache-file + implements cache-logic in routes and helper file |
+| Task 7 |  database.py + database_session.py + routes.py + routes_utils.py + tests/   | Adds tests, creates DI with Databse wrappers, simplifies endpoint logic                                                          |
 
 
 ## About this project
@@ -26,8 +26,51 @@ The original course repository from the lecturer, [Åsmund Eldhuset](https://git
 The original assignment text can also be found under /docs/original_assignment.md, and the original code repository is located in a branch called "starting-point" in this repository.
 This preserved and early version of the code is kept intentionally to show the development process and architectural evolution of the codebase.
 
-## Technology
+Starting from the unfinished course repository, I restructured the application, improved the database model, added 
+indexing and caching, implemented JSON and binary export, and introduced a cleaner testing setup.
 
+## Repository overview
+
+### Main folders
+
+- `app/` — Flask application code, templates, static files, cache, database helpers, and the custom `.kine` format tools
+- `db_setup/` — database schema, seed file, setup scripts, and helper shell scripts
+- `docs/` — project documentation and report
+- `tests/` — automated tests for database/session logic and endpoints
+
+## Technology used
+
+- **Python**
+- **Flask**
+- **PostgreSQL**
+- **psycopg**
+- **Docker**
+- **pytest**
+- **tox**
+- **flake8**
+
+
+## Design decisions
+
+**Design summary**
+
+
+Compared with the original course starter code, I made a few larger structural changes:
+- Introduced an application factory in app/__init__.py and used run.py as the entrypoint
+- Implemented a .env file for a centralized solution for variables
+- Replaced repeated database connection code with a dedicated DatabaseSession context manager
+- Added a Database helper class to centralize SQL execution
+- Moved SQL into queries.py
+- Added Makefile commands to simplify setup and execution
+- Added tests, tox, and flake8
+- Split database setup into a separate db_setup/ area
+
+These changes were mainly made to improve readability, reduce repeated code, and make the project easier to test and maintain.
+
+
+Any changes to the database environment, such as the container name, host name, port etc. Make the changes in the .env-file.
+You do not need to make changes elsewhere.
+This is the one source of truth for environment loading, and it is not hardcoded anywhere else.
 
 ## How to run
 
@@ -198,103 +241,3 @@ make stop-db
 ./database/scripts/stop_container.sh
 ```
 </details>
-
-## Design decisions
-
-
-1) Adding a factory pattern to the Flask project.
-
-A factory pattern.... blabla.
-
-Implementing this by making run.py the main entrypoint for running the app by running the app = create_app() function.
-In this case, app refers to the folder for the source code for the app itself. 
-
-It consists of, among other things, an __init__.py file. This file create the function for create_app().
-It is, in other words, this file that does the actual app creation itself. An app constructor, if you will, which fits its file name.
-In the app creation file, the Blueprint is added. 
-
-The file called routes.py is the route handler, as the name suggests.
-In the original file, the app was created here, and the routes were attached to this app using @app.routes.
-Then the app was created if the file was run as a file (__main__), not as a module. So running this file, was how the server was created.
-This creates a high coupling and makes it harder to test.
-
-
-2) Removing the repeated DB_CONFIG files with the connected psycopg.connect(). This code was repeated a lot, exposes secrets, and would be hard to maintain if anything were to change.
-
-
-
-
-
-
-- Lower coupling
-- Easier to test
-- Greater separation of concern
-- Easier to scale
-
-
-### Overview of the current file structure
-
-#### Directories
-
-- app
--> this is where all of the running code lives
-
-- db_setup
--> this is where the initialization and setup of the database is
-
-- docs
--> this is where documentation for the project is located
-
-- tests
--> the test files for the project lives here
-
-
-#### Files
-
-##### app directory
-
-- static folder
-- templates folder
-- __init__.py
-- database_connection.py
-- kine.py
-- queries.py
-- routes.py
-
-##### db_setup directory
-
-- scripts directory
-- sql directory
-- db_seed_bricklink.json.gz
-- migrate_database.py
-- seed_database.py
-
-##### docs directory
-
-
-##### tests directory
-
-
-##### misc in root
-
-- .env
--> the environments for the project
-
-- .env.example
--> a general template for how .env looks, that can be committed to git, so that others can insert their own info, such as passwords and usernames
-
-- Makefile
-
-- README.md
-
-- requirements.txt
-
-- run.py
-
-- tox.ini
-
-
-
-Any changes to the database environment, such as the container name, host name, port etc. Make the changes in the .env-file.
-You do not need to make changes elsewhere.
-This is the one source of truth for environment loading, and it is not hardcoded anywhere else.

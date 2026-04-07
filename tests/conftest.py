@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
 
+from app import create_app
 from app.database_session import DatabaseSession
 from app.database import Database
 
@@ -94,3 +95,17 @@ def database(fake_active_session):
     Use this for tests for execute(), fetch_one(), and fetch_all().
     """
     return Database(fake_active_session)
+
+
+@pytest.fixture
+def client():
+    app = create_app()
+    app.config["TESTING"] = True
+
+    with app.test_client() as client:
+        yield client
+
+@pytest.fixture
+def mocked_database():
+    with patch("app.routes.DatabaseSession"), patch("app.routes.Database") as mock_database_class:
+        yield mock_database_class.return_value

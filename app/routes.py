@@ -15,13 +15,14 @@ from .routes_utils import (build_rows,
                            get_encoding,
                            replace_placeholders,
                            build_set_response,
-                           return_400_missing_set_id,
-                           return_404_set_not_found,
-                           return_400_missing_set_id_binary,
-                           return_404_set_not_found_binary)
+                           build_400_response,
+                           build_404_response,
+                           build_400_response_binary,
+                           build_404_response_binary,
+                           return_cached_data,
+                           build_sets_response, build_sets_page_html, load_template)
 
 bp = Blueprint('main', __name__, template_folder="templates")
-
 set_cache = LRUCache()
 
 
@@ -34,25 +35,18 @@ def index():
 def sets():
     encoding = get_encoding(request)
     meta_charset = '<meta charset="UTF-8">' if encoding == "utf-8" else ""
-
-    with open("app/templates/sets.html", "r", encoding="utf-8") as f:
-        template = f.read()
+    template = load_template()
 
     with DatabaseSession() as session:
         start_time = perf_counter()
         db = Database(session)
-        result = db.fetch_all(get_all_sets())
-        rows = build_rows(result)
         print(f"Time to render all sets: {perf_counter() - start_time}")
+        page_html = build_sets_page_html(db, template, meta_charset)
 
-    page_html = replace_placeholders(template, meta_charset, rows)
     encoded_html = page_html.encode(encoding)
     compressed_html = gzip.compress(encoded_html)
 
-    return Response(compressed_html,
-                    content_type=f"text/html; charset={encoding}",
-                    headers={"Content-Encoding": "gzip",
-                             "Cache-Control": "public, max-age=60"})
+    return build_sets_response(compressed_html, encoding)
 
 
 @bp.route("/set")
@@ -65,18 +59,15 @@ def api_set():
     set_id = request.args.get("id")
 
     if not set_id:
-        return return_400_missing_set_id()
+        return build_400_response()
 
     start_time = perf_counter()
-
     cached_data = set_cache.get(set_id)
+
     if cached_data is not None:
         elapsed = perf_counter() - start_time
         print(f"/api/set cache hit for {set_id}: {elapsed:.6f} seconds")
-        return Response(
-            json.dumps(cached_data, indent=4),
-            content_type="application/json"
-        )
+        return return_cached_data(cached_data)
 
     with DatabaseSession() as session:
         db = Database(session)
@@ -86,7 +77,7 @@ def api_set():
     data = build_set_response(rows)
 
     if data is None:
-        return return_404_set_not_found()
+        return build_404_response()
 
     set_cache.put(set_id, data)
 
@@ -104,7 +95,7 @@ def api_set_binary():
     set_id = request.args.get("id")
 
     if not set_id:
-        return return_400_missing_set_id_binary()
+        return build_400_response_binary()
 
     with DatabaseSession() as session:
         db = Database(session)
@@ -114,7 +105,7 @@ def api_set_binary():
     data = build_set_response(rows)
 
     if data is None:
-        return return_404_set_not_found_binary()
+        return build_404_response_binary()
 
     binary_data = build_kine_bytes(data)
 

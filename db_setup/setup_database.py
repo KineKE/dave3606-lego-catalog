@@ -20,7 +20,7 @@ def load_schema():
     """
 
     with open(SCHEMA_FILE, "r", encoding="utf-8") as file:
-        return file.read
+        return file.read()
 
 
 def main():
