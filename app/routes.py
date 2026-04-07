@@ -6,10 +6,18 @@ import json
 from flask import Response, request, Blueprint, render_template
 from time import perf_counter
 
-from .queries import get_all_sets
+from .kine import build_kine_bytes
+from .queries import get_all_sets, get_set_with_inventory
 from .database_session import DatabaseSession
 from .database import Database
-from .routes_utils import build_rows, get_encoding, replace_placeholders
+from .routes_utils import (build_rows,
+                           get_encoding,
+                           replace_placeholders,
+                           build_set_response,
+                           return_400_missing_set_id,
+                           return_404_set_not_found,
+                           return_400_missing_set_id_binary,
+                           return_404_set_not_found_binary)
 
 bp = Blueprint('main', __name__, template_folder="templates")
 
@@ -51,6 +59,49 @@ def lego_set():  # We don't want to call the function `set`, that would hide the
 @bp.route("/api/set")
 def api_set():
     set_id = request.args.get("id")
-    result = {"set_id": set_id}
-    json_result = json.dumps(result, indent=4)
-    return Response(json_result, content_type="application/json")
+
+    if not set_id:
+        return return_400_missing_set_id()
+
+    with DatabaseSession() as session:
+        db = Database(session)
+        query, params = get_set_with_inventory(set_id)
+        rows = db.fetch_all(query, params)
+
+    data = build_set_response(rows)
+
+    if data is None:
+        return return_404_set_not_found()
+
+    return Response(
+        json.dumps(data, indent=4),
+        content_type="application/json"
+    )
+
+
+@bp.route("/api/set-binary")
+def api_set_binary():
+    set_id = request.args.get("id")
+
+    if not set_id:
+        return return_400_missing_set_id_binary()
+
+    with DatabaseSession() as session:
+        db = Database(session)
+        query, params = get_set_with_inventory(set_id)
+        rows = db.fetch_all(query, params)
+
+    data = build_set_response(rows)
+
+    if data is None:
+        return return_404_set_not_found_binary()
+
+    binary_data = build_kine_bytes(data)
+
+    return Response(
+        binary_data,
+        content_type="application/octet-stream",
+        headers={
+            "Content-Disposition": f'attachment; filename="{set_id}.kine"'
+        }
+    )
