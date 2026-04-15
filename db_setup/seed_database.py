@@ -38,7 +38,7 @@ def collect_unique_bricks(seed_data):
     :return: A dictionary mapping (brick_type_id, color_id) to (name, preview_image_url)
     """
 
-    bricks = defaultdict(seed_data)
+    bricks = defaultdict(set)
 
     for lego_set in seed_data:
         inventory = lego_set.get("inventory") or []

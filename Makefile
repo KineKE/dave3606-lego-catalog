@@ -3,7 +3,7 @@ install:
 	pip install -r requirements.txt
 
 # Set up environment variables
-create-env:
+env:
 	cp .env.example .env
 
 # Database setup and migration
@@ -35,6 +35,7 @@ test:
 help:
 	@echo "Available targets: "
 	@echo "	make install	- install requirements for the project"
+	@echo " make env		- create an env file"
 	@echo "	make setup-db	- initialize the database and run migrations"
 	@echo "	make start-db	- start the Docker container with the database"
 	@echo "	make stop-db	- stop the Docker container with the database"

@@ -6,16 +6,16 @@
 
 ## Where the assignment tasks are implemented
 
-| Task # |                                  Location                                   | Explanation                                                                                                                      |
-|:------:|:---------------------------------------------------------------------------:|----------------------------------------------------------------------------------------------------------------------------------|
-| Report |                               docs/report.md                                | Describes design choices, SQL statements and performance reasoning                                                               |
-| Task 1 |                           db_setup/sql/schema.sql                           | Adds PK and FK constraints to the existing schema                                                                                |
-| Task 2 |                           db_setup/sql/schema.py                            | Adds indexes to support brick-type and color-based searches combined with set id                                                 |
-| Task 3 |                    app/routes.py  + app/routes_utils.py                     | Improving algorithmic complexity                                                                                                 |
-| Task 4 |                     app/routes.py + app/routes_utils.py                     | Encoding, compression, file handle safety                                                                                         |
-| Task 5 |                  app/kine.py + app/kinecat + app/routes.py                  | Creates JSON dump and custom binary file format + implements the logic in the endpoint                                           |
-| Task 6 | app/templates/set.html + app/cache.py + app/routes.py + app/routes_utils.py | Adds javascript to display the set inventory information + creates cache-file + implements cache-logic in routes and helper file |
-| Task 7 |  database.py + database_session.py + routes.py + routes_utils.py + tests/   | Adds tests, creates DI with Databse wrappers, simplifies endpoint logic                                                          |
+| Task # |                                         Location                                         | Explanation                                                                                                                      |
+|:------:|:----------------------------------------------------------------------------------------:|----------------------------------------------------------------------------------------------------------------------------------|
+| Report |                                      docs/report.md                                      | Describes design choices, SQL statements and performance reasoning                                                               |
+| Task 1 |                                 db_setup/sql/schema.sql                                  | Adds PK and FK constraints to the existing schema                                                                                |
+| Task 2 |                                 db_setup/sql/schema.sql                                  | Adds indexes to support brick-type and color-based searches combined with set id                                                 |
+| Task 3 |                           app/routes.py  + app/routes_utils.py                           | Improving algorithmic complexity                                                                                                 |
+| Task 4 |                           app/routes.py + app/routes_utils.py                            | Encoding, compression, file handle safety                                                                                         |
+| Task 5 |                        app/kine.py + app/kinecat + app/routes.py                         | Creates JSON dump and custom binary file format + implements the logic in the endpoint                                           |
+| Task 6 |       app/templates/set.html + app/cache.py + app/routes.py + app/routes_utils.py        | Adds javascript to display the set inventory information + creates cache-file + implements cache-logic in routes and helper file |
+| Task 7 | app/database.py + app/database_session.py + app/routes.py + app/routes_utils.py + tests/ | Adds tests, creates DI with Databse wrappers, simplifies endpoint logic                                                          |
 
 
 ## About this project
@@ -76,13 +76,30 @@ This is the one source of truth for environment loading, and it is not hardcoded
 > [!TIP]
 > To get a full list of `make` commands, use `make help`
 
-### Initial setup
+### To run a full setup
+
+Assuming Python 3 and Docker are installed, the full setup can be done by running this:
+
+```text
+git clone https://github.com/KineKE/dave3606-lego-catalog.git
+cd dave3606-lego-catalog
+
+python -m venv .venv
+source .venv/bin/activate
+
+make install
+make create-env
+make setup-db
+make run
+```
+
+### To run the set up step by step. Initial setup.
 
 #### 1) Clone this repository
 
 ```text
-git clone <repo-url>
-cd <repo-name>
+git clone https://github.com/KineKE/dave3606-lego-catalog.git
+cd dave3606-lego-catalog
 ```
 
 #### 2) Create and activate a virtual environment
@@ -113,26 +130,7 @@ pip install -r requirements.txt
 ```
 </details>
 
-#### 4) Create and seed the database
-
-```text
-make setup-db
-```
-
-<details>
-    <summary>Initiate and set up the database manually without using make? </summary>
-
-
-```text
-./database/scripts/create_and_run_database.sh
-./database/sql/00_init_database.py
-./database/sql/01_constraints.py
-./database/sql/02_indexes.py
-./database/seed_database.py
-```
-</details>
-
-#### 5) Set up enviroment variables
+#### 4) Set up enviroment variables
 
 ```text
 make env
@@ -148,6 +146,25 @@ cp .env.example .env
 Then adjust the values in .env if needed, such as database username and password.
 As this is a student project where we have set out own values, there is no need to make changes, it will work with the values provided as defaults.
 
+
+#### 5) Create and seed the database
+
+```text
+make setup-db
+```
+
+<details>
+    <summary>Initiate and set up the database manually without using make? </summary>
+
+
+```text
+./db_setup/scripts/create_and_run_db.sh
+./db_setup/setup_database.py
+./db_setup/seed_database.py
+```
+</details>
+
+
 ### How to use
 
 #### 1) Start Docker container for the database
@@ -160,7 +177,7 @@ make start-db
     <summary>Start the database container manually without using make? </summary>
 
 ```text
-./database/scripts/start_container.sh
+./db_setup/scripts/start_container.sh
 ```
 </details>
 
@@ -174,7 +191,7 @@ make connect-db
     <summary>Connect to the database manually without using make? </summary>
 
 ```text
-./databse/scripts/connect_to_database.sh
+./db_setup/scripts/connect_to_db.sh
 ```
 
 </details>
@@ -237,6 +254,6 @@ make stop-db
     <summary>Stop container for the database without using make? </summary>
 
 ```text
-./database/scripts/stop_container.sh
+./db_setup/scripts/stop_container.sh
 ```
 </details>
