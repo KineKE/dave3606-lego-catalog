@@ -122,16 +122,8 @@ source .venv/bin/activate
 #### 3) Install dependencies
 
 ```text
-make install
+python -m pip install -r requirements.txt
 ```
-
-<details>
-    <summary>Install dependencies manually without using make? </summary>
-
-```text
-pip install -r requirements.txt
-```
-</details>
 
 #### 4) Set up environment variables
 
