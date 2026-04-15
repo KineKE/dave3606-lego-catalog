@@ -130,7 +130,7 @@ pip install -r requirements.txt
 ```
 </details>
 
-#### 4) Set up enviroment variables
+#### 4) Set up environment variables
 
 ```text
 make env
@@ -221,7 +221,7 @@ http://127.0.0.1:5000
 
 ### Running tests
 
-I have added `tox` to project, which ensures reproducible test execution in a controlled environment. It runs on `pytest`.
+I have added `tox` to the project, which ensures reproducible test execution in a controlled environment. It uses on `pytest`.
 A linter called `flake8` has also been added to tox' test environment and will be run along with the `tox` test suite.
 
 To run the full test suite:
