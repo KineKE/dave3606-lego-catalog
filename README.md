@@ -88,7 +88,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 make install
-make create-env
+make env
 make setup-db
 make run
 ```
