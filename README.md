@@ -78,16 +78,19 @@ This is the one source of truth for environment loading, and it is not hardcoded
 
 ### To run a full setup
 
-Assuming Python 3 and Docker are installed, the full setup can be done by running this:
+Assuming Python 3 and Docker are installed.
+Make sure Docker Desktop is up and running.
+
+Then, the full setup can be done by running this:
 
 ```text
 git clone https://github.com/KineKE/dave3606-lego-catalog.git
 cd dave3606-lego-catalog
 
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 
-make install
+python -m pip install -r requirements.txt
 make env
 make setup-db
 make run
